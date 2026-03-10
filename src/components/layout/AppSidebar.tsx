@@ -14,6 +14,7 @@ import {
   ChevronRight,
   Tag,
   GitBranch,
+  FileType,
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -30,6 +31,7 @@ const navItems = [
   { label: "File Tracker", icon: GitBranch, path: "/dashboard/workflow" },
   // { label: "Archive", icon: Archive, path: "/dashboard/archive" },
   { label: "Reports", icon: BarChart3, path: "/dashboard/reports" },
+  { label: "Convert PDF", icon: FileType, path: "/dashboard/convert-pdf" },
   // { label: "Search", icon: Search, path: "/dashboard/search" },
 ];
 

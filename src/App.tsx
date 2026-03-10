@@ -17,6 +17,7 @@ import AdminSettings from "./pages/AdminSettings";
 import ProfileSettings from "./pages/ProfileSettings";
 import ClassificationManagement from "./pages/ClassificationManagement";
 import RequestManagement from "./pages/RequestManagement";
+import PdfConverter from "./pages/PdfConverter";
 import DashboardLayout from "./components/layout/DashboardLayout";
 import NotFound from "./pages/NotFound";
 
@@ -58,6 +59,7 @@ const App = () => (
             <Route path="settings" element={<AdminSettings />} />
             <Route path="profile" element={<ProfileSettings />} />
             <Route path="classifications" element={<ClassificationManagement />} />
+            <Route path="convert-pdf" element={<PdfConverter />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
