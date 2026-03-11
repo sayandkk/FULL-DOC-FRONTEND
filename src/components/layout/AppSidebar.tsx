@@ -31,7 +31,7 @@ const navItems = [
   { label: "File Tracker", icon: GitBranch, path: "/dashboard/workflow" },
   // { label: "Archive", icon: Archive, path: "/dashboard/archive" },
   { label: "Reports", icon: BarChart3, path: "/dashboard/reports" },
-  { label: "Convert PDF", icon: FileType, path: "/dashboard/convert-pdf" },
+  { label: "Convert", icon: FileType, path: "/dashboard/convert-pdf" },
   // { label: "Search", icon: Search, path: "/dashboard/search" },
 ];
 
@@ -65,7 +65,7 @@ const AppSidebar = () => {
       )}
     >
       {/* Header: Workspace Switcher */}
-      <div className="flex items-center gap-3 p-4 h-16 border-b border-sidebar-border shrink-0 hover:bg-black/5 cursor-pointer transition-colors">
+      <div className="flex items-center gap-3 p-4 h-16 border-b border-sidebar-border shrink-0 hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer transition-colors">
         <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shrink-0 shadow-sm">
           <FileText className="w-5 h-5 text-primary-foreground" />
         </div>
@@ -82,7 +82,7 @@ const AppSidebar = () => {
       {/* Search Bar (Mock Cmd+K) */}
       {!collapsed && (
         <div className="px-4 py-3">
-          <button className="flex items-center justify-between w-full px-3 py-2 text-sm text-sidebar-foreground/60 bg-black/5 rounded-md hover:bg-black/10 transition-colors border border-black/5">
+          <button className="flex items-center justify-between w-full px-3 py-2 text-sm text-sidebar-foreground/60 bg-black/5 dark:bg-white/5 rounded-md hover:bg-black/10 dark:hover:bg-white/10 transition-colors border border-black/5 dark:border-white/5">
             <div className="flex items-center gap-2">
               <Search className="w-4 h-4" />
               <span>Search...</span>
@@ -125,7 +125,7 @@ const AppSidebar = () => {
                   "flex items-center gap-3 px-2 py-2 rounded-md text-[13px] font-medium transition-all group",
                   isActive
                     ? "bg-primary/10 text-primary font-semibold"
-                    : "text-sidebar-foreground/80 hover:bg-black/5"
+                    : "text-sidebar-foreground/80 hover:bg-black/5 dark:hover:bg-white/5"
                 )}
                 title={collapsed ? item.label : undefined}
               >
@@ -149,7 +149,7 @@ const AppSidebar = () => {
                   "flex items-center gap-3 px-2 py-2 rounded-md text-[13px] font-medium transition-all group",
                   isActive
                     ? "bg-primary/10 text-primary font-semibold"
-                    : "text-sidebar-foreground/80 hover:bg-black/5"
+                    : "text-sidebar-foreground/80 hover:bg-black/5 dark:hover:bg-white/5"
                 )}
                 title={collapsed ? item.label : undefined}
               >
@@ -174,7 +174,7 @@ const AppSidebar = () => {
                     "flex items-center gap-3 px-2 py-2 rounded-md text-[13px] font-medium transition-all group",
                     isActive
                       ? "bg-primary/10 text-primary font-semibold"
-                      : "text-sidebar-foreground/80 hover:bg-black/5"
+                      : "text-sidebar-foreground/80 hover:bg-black/5 dark:hover:bg-white/5"
                   )}
                   title={collapsed ? item.label : undefined}
                 >
@@ -216,7 +216,7 @@ const AppSidebar = () => {
           variant="outline"
           size="icon"
           onClick={() => setCollapsed(!collapsed)}
-          className="w-full h-full rounded-full border border-sidebar-border bg-sidebar hover:bg-black/5 text-sidebar-foreground shadow-sm p-0 flex items-center justify-center transition-colors"
+          className="w-full h-full rounded-full border border-sidebar-border bg-sidebar hover:bg-black/5 dark:hover:bg-white/5 text-sidebar-foreground shadow-sm p-0 flex items-center justify-center transition-colors"
         >
           {collapsed ? (
             <ChevronRight className="w-3.5 h-3.5" />

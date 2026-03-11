@@ -116,7 +116,7 @@ const Dashboard = () => {
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-indigo-300" />
           <Input
             placeholder="Search all files and inwards..."
-            className="pl-11 h-12 bg-white/10 border-white/20 text-white placeholder:text-indigo-300 focus-visible:ring-cyan-500/50 rounded-xl shadow-inner backdrop-blur-md transition-all hover:bg-white/15 focus:bg-white/20"
+            className="pl-11 h-12 bg-white/10 dark:bg-black/20 border-white/20 dark:border-white/10 text-white placeholder:text-indigo-300 focus-visible:ring-cyan-500/50 rounded-xl shadow-inner backdrop-blur-md transition-all hover:bg-white/15 focus:bg-white/20"
           />
         </div>
       </div>
@@ -126,21 +126,21 @@ const Dashboard = () => {
         {kpiCards.map((kpi, index) => {
           const Icon = kpi.icon;
           return (
-            <Card key={index} className="border-none shadow-sm bg-white/80 backdrop-blur-md rounded-2xl overflow-hidden group hover:shadow-md transition-all duration-300 hover:-translate-y-1 relative">
+            <Card key={index} className="border-none shadow-sm bg-white/80 dark:bg-slate-900/80 backdrop-blur-md rounded-2xl overflow-hidden group hover:shadow-md transition-all duration-300 hover:-translate-y-1 relative">
               <div className={`absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-300 ${kpi.gradient}`} />
               <CardContent className="p-5 flex items-center justify-between">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
                     {kpi.label}
                   </p>
-                  <p className="text-3xl font-bold font-sans text-foreground/90 group-hover:text-indigo-950 transition-colors">
+                  <p className="text-3xl font-bold font-sans text-foreground/90 group-hover:text-indigo-950 dark:group-hover:text-indigo-100 transition-colors">
                     {loading ? "—" : kpi.value}
                   </p>
                   <p className="text-[11px] font-medium text-muted-foreground mt-1 truncate">
                     {kpi.change}
                   </p>
                 </div>
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 border ${kpi.borderColor} ${kpi.gradient} group-hover:scale-110 transition-transform duration-300`}>
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 border ${kpi.borderColor} ${kpi.gradient} dark:bg-opacity-20 group-hover:scale-110 transition-transform duration-300`}>
                   <Icon className={`w-6 h-6 ${kpi.iconColor}`} />
                 </div>
               </CardContent>
@@ -153,7 +153,7 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-100 fill-mode-both">
 
         {/* Top Left (Large): Activity Pulse */}
-        <Card className="md:col-span-8 shadow-card border-none bg-white/80 backdrop-blur-md overflow-hidden rounded-2xl flex flex-col justify-between min-h-[400px]">
+        <Card className="md:col-span-8 shadow-card border-none bg-white/80 dark:bg-slate-900/80 backdrop-blur-md overflow-hidden rounded-2xl flex flex-col justify-between min-h-[400px]">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <div>
               <CardTitle className="text-xl font-sans flex items-center gap-2">
@@ -166,7 +166,7 @@ const Dashboard = () => {
           </CardHeader>
           <CardContent className="flex-1 flex flex-col justify-end p-0">
             {/* Dynamic line chart area */}
-            <div className="relative h-64 w-full bg-gradient-to-t from-indigo-50/50 to-transparent mt-4 opacity-80 border-t border-indigo-100/50">
+            <div className="relative h-64 w-full bg-gradient-to-t from-indigo-50/50 dark:from-indigo-500/5 to-transparent mt-4 opacity-80 border-t border-indigo-100/50 dark:border-indigo-500/10">
               {(() => {
                 const defaultTrend = [0, 0, 0, 0, 0, 0, 0];
                 const trendData = Array.isArray(stats.weeklyTrend) ? stats.weeklyTrend : defaultTrend;
@@ -193,11 +193,11 @@ const Dashboard = () => {
               <div className="absolute top-6 left-6 flex gap-8">
                 <div>
                   <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Processed</p>
-                  <p className="text-3xl font-bold font-sans text-indigo-950 mt-1">{loading ? "—" : stats.filesProcessedThisWeek}</p>
+                  <p className="text-3xl font-bold font-sans text-indigo-950 dark:text-indigo-100 mt-1">{loading ? "—" : stats.filesProcessedThisWeek}</p>
                 </div>
                 <div>
                   <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Pending</p>
-                  <p className="text-3xl font-bold font-sans text-indigo-950 mt-1">{loading ? "—" : stats.pending}</p>
+                  <p className="text-3xl font-bold font-sans text-indigo-950 dark:text-indigo-100 mt-1">{loading ? "—" : stats.pending}</p>
                 </div>
               </div>
             </div>
@@ -205,7 +205,7 @@ const Dashboard = () => {
         </Card>
 
         {/* Top Right (Small): Pending for You */}
-        <Card className="md:col-span-4 shadow-card border-none bg-white/80 backdrop-blur-md rounded-2xl flex flex-col relative overflow-hidden group">
+        <Card className="md:col-span-4 shadow-card border-none bg-white/80 dark:bg-slate-900/80 backdrop-blur-md rounded-2xl flex flex-col relative overflow-hidden group">
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-400 to-orange-500 opacity-80" />
           <CardHeader className="pb-3 border-b border-black/5">
             <div className="flex items-center justify-between">
@@ -213,7 +213,7 @@ const Dashboard = () => {
                 <AlertCircle className="w-5 h-5 text-amber-500" />
                 Pending for You
               </CardTitle>
-              <Badge variant="secondary" className="bg-amber-100 text-amber-700 hover:bg-amber-100 rounded-full px-2.5">
+              <Badge variant="secondary" className="bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 hover:bg-amber-100 rounded-full px-2.5">
                 {stats.pending} items
               </Badge>
             </div>
@@ -261,7 +261,7 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200 fill-mode-both">
 
         {/* Recently Opened */}
-        <Card className="shadow-card border-none bg-white/80 backdrop-blur-md rounded-2xl col-span-1 md:col-span-2 relative overflow-hidden">
+        <Card className="shadow-card border-none bg-white/80 dark:bg-slate-900/80 backdrop-blur-md rounded-2xl col-span-1 md:col-span-2 relative overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-400 to-cyan-400 opacity-80" />
           <CardHeader className="pb-2">
             <CardTitle className="text-lg font-sans flex items-center justify-between">
@@ -282,7 +282,7 @@ const Dashboard = () => {
                 {recentFiles.slice(0, 4).map((file) => (
                   <div key={file.id}
                     onClick={() => navigate('/dashboard/files', { state: { selectedFileId: file.id } })}
-                    className="group flex gap-3 p-3 rounded-xl border border-black/5 hover:border-indigo-500/30 hover:shadow-sm bg-white cursor-pointer transition-all"
+                    className="group flex gap-3 p-3 rounded-xl border border-black/5 dark:border-white/5 hover:border-indigo-500/30 hover:shadow-sm bg-white dark:bg-slate-900 cursor-pointer transition-all"
                   >
                     <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center shrink-0 group-hover:bg-indigo-50 transition-colors">
                       <FileText className="w-5 h-5 text-slate-500 group-hover:text-indigo-600 transition-colors" />
@@ -299,7 +299,7 @@ const Dashboard = () => {
         </Card>
 
         {/* Workflow & Storage Insights */}
-        <Card className="shadow-card border-none bg-white/80 backdrop-blur-md rounded-2xl flex flex-col relative overflow-hidden">
+        <Card className="shadow-card border-none bg-white/80 dark:bg-slate-900/80 backdrop-blur-md rounded-2xl flex flex-col relative overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-400 to-pink-500 opacity-80" />
           <CardHeader className="pb-2">
             <CardTitle className="text-lg font-sans flex items-center gap-2">
@@ -309,7 +309,7 @@ const Dashboard = () => {
           </CardHeader>
           <CardContent className="flex-1 flex flex-col gap-4">
             {/* Storage Widget Dynamic */}
-            <div className="p-4 rounded-xl border border-black/5 bg-slate-50/50">
+            <div className="p-4 rounded-xl border border-black/5 dark:border-white/5 bg-slate-50/50 dark:bg-black/20">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
                   <HardDrive className="w-4 h-4 text-slate-500" />
@@ -336,7 +336,7 @@ const Dashboard = () => {
             </div>
 
             {/* Workflow Status Mock */}
-            <div className="p-4 rounded-xl border border-black/5 bg-slate-50/50">
+            <div className="p-4 rounded-xl border border-black/5 dark:border-white/5 bg-slate-50/50 dark:bg-black/20">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-[13px] font-semibold">Active Workflows</span>
                 <Badge variant="outline" className="text-[10px] bg-white border-black/10 text-slate-600">This Month</Badge>

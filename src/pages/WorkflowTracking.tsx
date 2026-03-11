@@ -114,8 +114,8 @@ const WorkflowTracking = () => {
 
             {/* File Info Overview (Kanban-style card) */}
             {file && (
-                <div className="bg-white/80 backdrop-blur-md border border-indigo-100/50 p-6 sm:p-8 rounded-3xl shadow-sm relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50/50 rounded-bl-full -z-10"></div>
+                <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border border-indigo-100/50 dark:border-white/5 p-6 sm:p-8 rounded-3xl shadow-sm relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50/50 dark:bg-indigo-500/5 rounded-bl-full -z-10"></div>
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                         <div className="flex-1">
                             <div className="flex items-center gap-3 mb-2">
@@ -131,14 +131,14 @@ const WorkflowTracking = () => {
                                     }
 
                                     return <Badge className={`border-0 shadow-none px-3 py-1 ${file.status === "APPROVED" ? "bg-green-100 text-green-800" :
-                                            file.status === "PENDING" ? "bg-yellow-100 text-yellow-800" :
-                                                file.status === "RETURNED" ? "bg-orange-100 text-orange-800" :
-                                                    "bg-blue-100 text-blue-800"
+                                        file.status === "PENDING" ? "bg-yellow-100 text-yellow-800" :
+                                            file.status === "RETURNED" ? "bg-orange-100 text-orange-800" :
+                                                "bg-blue-100 text-blue-800"
                                         }`}>{`${file.status}`}</Badge>;
                                 })()}
                             </div>
-                            <h2 className="text-xl sm:text-2xl font-bold text-slate-900 mb-2 leading-tight">{file.subject}</h2>
-                            <div className="flex items-center gap-4 text-sm text-slate-500">
+                            <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2 leading-tight">{file.subject}</h2>
+                            <div className="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
                                 <span className="flex items-center gap-1.5"><GitBranch className="w-4 h-4 opacity-70" /> {`${file.department?.name || "—"}`}</span>
                                 <span className="flex items-center gap-1.5"><Clock className="w-4 h-4 opacity-70" /> {new Date(file.createdAt).toLocaleDateString()}</span>
                             </div>
@@ -152,22 +152,22 @@ const WorkflowTracking = () => {
 
             {/* Movement Trail (Timeline Stepping) */}
             {file && (
-                <div className="bg-white/80 backdrop-blur-md border border-indigo-100/50 p-6 sm:p-10 rounded-3xl shadow-sm">
+                <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border border-indigo-100/50 dark:border-white/5 p-6 sm:p-10 rounded-3xl shadow-sm">
                     <div className="flex items-center justify-between mb-8">
-                        <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                        <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
                             <GitBranch className="w-5 h-5 text-indigo-500" /> Movement Timeline
                         </h3>
                         <Badge variant="secondary" className="bg-slate-100 text-slate-600 shadow-none border-0 font-medium px-3">{`${movements.length} Steps`}</Badge>
                     </div>
 
                     {movements.length === 0 ? (
-                        <div className="text-center py-12 px-4 border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50/50">
-                            <p className="text-slate-500 font-medium">No movements recorded for this file yet.</p>
+                        <div className="text-center py-12 px-4 border-2 border-dashed border-slate-200 dark:border-white/10 rounded-2xl bg-slate-50/50 dark:bg-black/20">
+                            <p className="text-slate-500 dark:text-slate-400 font-medium">No movements recorded for this file yet.</p>
                         </div>
                     ) : (
                         <div className="relative pl-4 sm:pl-8">
                             {/* Vertical connecting line */}
-                            <div className="absolute left-[27px] sm:left-[43px] top-6 bottom-6 w-0.5 bg-gradient-to-b from-indigo-200 via-indigo-100 to-transparent"></div>
+                            <div className="absolute left-[27px] sm:left-[43px] top-6 bottom-6 w-0.5 bg-gradient-to-b from-indigo-200 via-indigo-100 dark:via-indigo-500/20 to-transparent"></div>
 
                             <div className="space-y-8 relative">
                                 {movements.map((m, i) => {
@@ -184,13 +184,13 @@ const WorkflowTracking = () => {
                                     return (
                                         <div key={m.id} className="relative flex items-start group">
                                             {/* Step Marker */}
-                                            <div className="absolute -left-4 sm:-left-3.5 top-0 z-10 w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-white border-[3px] border-indigo-200 flex items-center justify-center shadow-sm group-hover:border-indigo-400 group-hover:scale-110 transition-all">
-                                                <div className={`w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full ${isLast ? 'bg-indigo-600 animate-pulse' : 'bg-indigo-300'}`}></div>
+                                            <div className="absolute -left-4 sm:-left-3.5 top-0 z-10 w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-white dark:bg-slate-900 border-[3px] border-indigo-200 dark:border-indigo-500/30 flex items-center justify-center shadow-sm group-hover:border-indigo-400 group-hover:scale-110 transition-all">
+                                                <div className={`w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full ${isLast ? 'bg-indigo-600 animate-pulse' : 'bg-indigo-300 dark:bg-indigo-700'}`}></div>
                                             </div>
 
                                             {/* Content Box */}
                                             <div className="ml-8 sm:ml-12 flex-1">
-                                                <div className={`p-5 rounded-2xl border transition-shadow ${isLast ? 'bg-indigo-50/30 border-indigo-200 shadow-md' : 'bg-white border-slate-100 shadow-sm hover:shadow-md'}`}>
+                                                <div className={`p-5 rounded-2xl border transition-shadow ${isLast ? 'bg-indigo-50/30 dark:bg-indigo-500/5 border-indigo-200 dark:border-indigo-500/30 shadow-md' : 'bg-white dark:bg-slate-900 border-slate-100 dark:border-white/5 shadow-sm hover:shadow-md'}`}>
                                                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
                                                         <div className="flex items-center gap-2 flex-wrap">
                                                             <Badge className={`shadow-none font-semibold px-2.5 py-0.5 border-0 ${actionColor}`}>
@@ -203,27 +203,27 @@ const WorkflowTracking = () => {
                                                         </div>
                                                     </div>
 
-                                                    <div className="text-sm text-slate-700 font-medium flex items-center gap-2 flex-wrap mt-2">
+                                                    <div className="text-sm text-slate-700 dark:text-slate-300 font-medium flex items-center gap-2 flex-wrap mt-2">
                                                         {isAdhocInsert ? (
-                                                            <span><span className="text-slate-900">{fromName}</span> added <span className="text-indigo-700">{toName}</span></span>
+                                                            <span><span className="text-slate-900 dark:text-slate-100">{fromName}</span> added <span className="text-indigo-700 dark:text-indigo-400">{toName}</span></span>
                                                         ) : isAdhocReturn ? (
-                                                            <span><span className="text-slate-900">{fromName}</span> (ad-hoc) returned to <span className="text-indigo-700">{toName}</span></span>
+                                                            <span><span className="text-slate-900 dark:text-slate-100">{fromName}</span> (ad-hoc) returned to <span className="text-indigo-700 dark:text-indigo-400">{toName}</span></span>
                                                         ) : m.action === 'CREATE' ? (
-                                                            <span>Initiated by <span className="text-slate-900">{toName}</span></span>
+                                                            <span>Initiated by <span className="text-slate-900 dark:text-slate-100">{toName}</span></span>
                                                         ) : (
                                                             <>
-                                                                <span className="text-slate-900">{fromName}</span>
-                                                                <ChevronRight className="w-4 h-4 text-slate-300" />
-                                                                <span className="text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-md">{toName}</span>
+                                                                <span className="text-slate-900 dark:text-slate-100">{fromName}</span>
+                                                                <ChevronRight className="w-4 h-4 text-slate-300 dark:text-slate-600" />
+                                                                <span className="text-indigo-700 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/50 px-2 py-0.5 rounded-md">{toName}</span>
                                                             </>
                                                         )}
                                                     </div>
 
                                                     {cleanRemarks && (
-                                                        <div className="mt-4 text-sm bg-slate-50/80 p-3 rounded-xl border border-slate-100 text-slate-600 italic">
-                                                            <span className="text-slate-400 font-serif text-lg leading-none absolute -mt-1 -ml-1">"</span>
+                                                        <div className="mt-4 text-sm bg-slate-50/80 dark:bg-black/20 p-3 rounded-xl border border-slate-100 dark:border-white/5 text-slate-600 dark:text-slate-400 italic">
+                                                            <span className="text-slate-400 dark:text-slate-600 font-serif text-lg leading-none absolute -mt-1 -ml-1">"</span>
                                                             <span className="pl-3">{cleanRemarks}</span>
-                                                            <span className="text-slate-400 font-serif text-lg leading-none absolute ml-1 mt-1">"</span>
+                                                            <span className="text-slate-400 dark:text-slate-600 font-serif text-lg leading-none absolute ml-1 mt-1">"</span>
                                                         </div>
                                                     )}
                                                 </div>
@@ -240,10 +240,10 @@ const WorkflowTracking = () => {
             {/* Empty Search State */}
             {!file && !loading && !error && (
                 <div className="text-center py-20 px-4">
-                    <div className="w-24 h-24 bg-indigo-50/50 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <Search className="w-10 h-10 text-indigo-200" />
+                    <div className="w-24 h-24 bg-indigo-50/50 dark:bg-indigo-900/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <Search className="w-10 h-10 text-indigo-200 dark:text-indigo-800" />
                     </div>
-                    <h3 className="text-xl font-bold text-slate-800 mb-2">Ready to Track</h3>
+                    <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100 mb-2">Ready to Track</h3>
                     <p className="text-slate-500 max-w-sm mx-auto">
                         Enter a file number above to trace its entire journey through the organizational hierarchy.
                     </p>

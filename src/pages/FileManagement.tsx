@@ -598,7 +598,7 @@ const FileManagement = () => {
                     <div className="flex flex-col sm:flex-row gap-3">
                         <div className="relative flex-1">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                            <Input placeholder="Search files..." className="pl-9" value={search} onChange={(e) => setSearch(e.target.value)} />
+                            <Input placeholder="Search files..." className="pl-9 dark:bg-slate-900 dark:border-white/10" value={search} onChange={(e) => setSearch(e.target.value)} />
                         </div>
                         <Tabs value={statusFilter} onValueChange={setStatusFilter}>
                             <TabsList>
@@ -659,8 +659,8 @@ const FileManagement = () => {
             </Card>
 
             {/* File List */}
-            <Card className="shadow-card border-none bg-white/80 backdrop-blur-md overflow-hidden rounded-2xl">
-                <CardHeader className="pb-3 border-b border-black/5 bg-white/50">
+            <Card className="shadow-card border-none bg-white/80 dark:bg-slate-900/80 backdrop-blur-md overflow-hidden rounded-2xl">
+                <CardHeader className="pb-3 border-b border-black/5 dark:border-white/5 bg-white/50 dark:bg-black/20">
                     <CardTitle className="text-lg font-sans flex items-center justify-between">
                         <div className="flex items-center gap-2 text-indigo-950">
                             <FolderOpen className="w-5 h-5 text-indigo-600" />
@@ -690,7 +690,7 @@ const FileManagement = () => {
                     ) : (
                         <div className="w-full text-sm">
                             {/* Smart Table Header */}
-                            <div className="grid grid-cols-12 gap-4 p-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider bg-black/[0.02] border-b border-black/5">
+                            <div className="grid grid-cols-12 gap-4 p-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider bg-black/[0.02] dark:bg-white/[0.02] border-b border-black/5 dark:border-white/5">
                                 <div className="col-span-1 text-center">Date</div>
                                 <div className="col-span-2">Number</div>
                                 <div className="col-span-4">Subject & Details</div>
@@ -699,10 +699,10 @@ const FileManagement = () => {
                                 <div className="col-span-1 text-right">Actions</div>
                             </div>
                             {/* Smart Table Body (Zebra striped) */}
-                            <div className="divide-y divide-black/5">
+                            <div className="divide-y divide-black/5 dark:divide-white/5">
                                 {files.map((file, index) => (
                                     <div key={file.id}
-                                        className={`grid grid-cols-12 gap-4 p-4 items-center group cursor-pointer transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-black/[0.01]'} hover:bg-indigo-50/50`}
+                                        className={`grid grid-cols-12 gap-4 p-4 items-center group cursor-pointer transition-colors ${index % 2 === 0 ? 'bg-white dark:bg-slate-900/50' : 'bg-black/[0.01] dark:bg-white/[0.02]'} hover:bg-indigo-50/50 dark:hover:bg-indigo-500/10`}
                                         onClick={() => openFile(file)}>
                                         <div className="col-span-1 text-center text-xs text-muted-foreground whitespace-nowrap">
                                             {new Date(file.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
@@ -779,7 +779,7 @@ const FileManagement = () => {
 
             {/* File Detail Dialog */}
             <Dialog open={!!selected} onOpenChange={() => { setSelected(null); setMovements([]); setDocuments([]); setInwardDocuments([]); }}>
-                <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto flex flex-col p-0 gap-0">
+                <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto flex flex-col p-0 gap-0 border-none bg-white dark:bg-slate-950 supports-[backdrop-filter]:bg-white/95 dark:supports-[backdrop-filter]:bg-slate-950/95 backdrop-blur-3xl">
                     <div className="p-6 pb-2">
                         <DialogHeader>
                             <DialogTitle className="flex items-center gap-2 text-xl">

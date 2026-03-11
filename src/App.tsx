@@ -21,6 +21,8 @@ import PdfConverter from "./pages/PdfConverter";
 import DashboardLayout from "./components/layout/DashboardLayout";
 import NotFound from "./pages/NotFound";
 
+import { ThemeProvider } from "./components/theme-provider";
+
 const queryClient = new QueryClient();
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -30,42 +32,44 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 };
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Login />} />
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <DashboardLayout />
-              </ProtectedRoute>
-            }
-          >
-            <Route index element={<Dashboard />} />
-            <Route path="inward" element={<InwardManagement />} />
-            <Route path="files" element={<FileManagement />} />
-            <Route path="master-files" element={<MasterFiles />} />
-            <Route path="requests" element={<RequestManagement />} />
-            <Route path="notes" element={<NotesManagement />} />
-            <Route path="documents" element={<DocumentManagement />} />
-            <Route path="workflow" element={<WorkflowTracking />} />
-            <Route path="archive" element={<ArchiveManagement />} />
-            <Route path="reports" element={<ReportsAnalytics />} />
-            <Route path="users" element={<AdminSettings />} />
-            <Route path="settings" element={<AdminSettings />} />
-            <Route path="profile" element={<ProfileSettings />} />
-            <Route path="classifications" element={<ClassificationManagement />} />
-            <Route path="convert-pdf" element={<PdfConverter />} />
-          </Route>
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
+  <ThemeProvider defaultTheme="light" storageKey="docflow-theme">
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Login />} />
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <DashboardLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route index element={<Dashboard />} />
+              <Route path="inward" element={<InwardManagement />} />
+              <Route path="files" element={<FileManagement />} />
+              <Route path="master-files" element={<MasterFiles />} />
+              <Route path="requests" element={<RequestManagement />} />
+              <Route path="notes" element={<NotesManagement />} />
+              <Route path="documents" element={<DocumentManagement />} />
+              <Route path="workflow" element={<WorkflowTracking />} />
+              <Route path="archive" element={<ArchiveManagement />} />
+              <Route path="reports" element={<ReportsAnalytics />} />
+              <Route path="users" element={<AdminSettings />} />
+              <Route path="settings" element={<AdminSettings />} />
+              <Route path="profile" element={<ProfileSettings />} />
+              <Route path="classifications" element={<ClassificationManagement />} />
+              <Route path="convert-pdf" element={<PdfConverter />} />
+            </Route>
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  </ThemeProvider>
 );
 
 export default App;

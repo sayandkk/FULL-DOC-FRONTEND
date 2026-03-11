@@ -220,8 +220,8 @@ const InwardManagement = () => {
             </Card>
 
             {/* List */}
-            <Card className="shadow-card border-none bg-white/80 backdrop-blur-md overflow-hidden rounded-2xl">
-                <CardHeader className="pb-3 border-b border-black/5 bg-white/50">
+            <Card className="shadow-card border-none bg-white/80 dark:bg-slate-900/80 backdrop-blur-md overflow-hidden rounded-2xl">
+                <CardHeader className="pb-3 border-b border-black/5 dark:border-white/5 bg-white/50 dark:bg-black/20">
                     <CardTitle className="text-lg font-sans flex items-center justify-between">
                         <div className="flex items-center gap-2 text-indigo-950">
                             <Inbox className="w-5 h-5 text-indigo-600" />
@@ -263,7 +263,7 @@ const InwardManagement = () => {
                             <div className="divide-y divide-black/5">
                                 {inwards.map((item, index) => (
                                     <div key={item.id}
-                                        className={`grid grid-cols-12 gap-4 p-4 items-center group cursor-pointer transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-black/[0.01]'} hover:bg-indigo-50/50`}
+                                        className={`grid grid-cols-12 gap-4 p-4 items-center group cursor-pointer transition-colors ${index % 2 === 0 ? 'bg-white dark:bg-slate-900/50' : 'bg-black/[0.01] dark:bg-white/[0.02]'} hover:bg-indigo-50/50 dark:hover:bg-indigo-500/10`}
                                         onClick={() => setSelected(item)}>
                                         <div className="col-span-1 text-center text-xs text-muted-foreground whitespace-nowrap">
                                             {new Date(item.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
@@ -302,7 +302,7 @@ const InwardManagement = () => {
 
             {/* New Inward Dialog */}
             <Dialog open={showForm} onOpenChange={setShowForm}>
-                <DialogContent className="max-w-xl rounded-2xl p-0 overflow-hidden border-none shadow-2xl supports-[backdrop-filter]:bg-background/80 backdrop-blur-xl">
+                <DialogContent className="max-w-xl rounded-2xl p-0 overflow-hidden border-none shadow-2xl supports-[backdrop-filter]:bg-background/80 dark:bg-slate-950/90 backdrop-blur-xl">
                     <div className="px-6 py-5 bg-gradient-to-r from-indigo-50/50 to-transparent border-b border-indigo-100/50">
                         <DialogTitle className="text-xl font-sans text-indigo-950">Register New Inward Entry</DialogTitle>
                         <p className="text-sm text-muted-foreground mt-1">Fill in the details for the new correspondence.</p>
@@ -352,7 +352,7 @@ const InwardManagement = () => {
 
             {/* Detail Dialog */}
             <Dialog open={!!selected} onOpenChange={() => setSelected(null)}>
-                <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col overflow-hidden rounded-[24px] p-0 border-none shadow-2xl bg-white supports-[backdrop-filter]:bg-white/95 backdrop-blur-3xl">
+                <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col overflow-hidden rounded-[24px] p-0 border-none shadow-2xl bg-white dark:bg-slate-950 supports-[backdrop-filter]:bg-white/95 dark:supports-[backdrop-filter]:bg-slate-950/95 backdrop-blur-3xl">
 
                     {/* Header Strip */}
                     <div className="px-8 py-5 flex items-center justify-between shrink-0 border-b border-slate-100">
@@ -361,7 +361,7 @@ const InwardManagement = () => {
                                 <FileText className="w-5 h-5 text-indigo-600" />
                             </div>
                             <div>
-                                <h2 className="text-xl font-bold font-sans text-slate-900 tracking-tight">
+                                <h2 className="text-xl font-bold font-sans text-slate-900 dark:text-slate-100 tracking-tight">
                                     {selected?.inwardNumber}
                                 </h2>
                                 <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest mt-0.5">
@@ -377,54 +377,54 @@ const InwardManagement = () => {
                     </div>
 
                     {selected && (
-                        <div className="flex-1 overflow-y-auto px-8 py-6 space-y-8 bg-slate-50/50">
+                        <div className="flex-1 overflow-y-auto px-8 py-6 space-y-8 bg-slate-50/50 dark:bg-black/20">
 
                             {/* Subject Area */}
                             <div>
                                 <p className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-2">Subject</p>
-                                <h1 className="text-2xl md:text-3xl font-bold font-sans text-slate-900 leading-tight">
+                                <h1 className="text-2xl md:text-3xl font-bold font-sans text-slate-900 dark:text-slate-100 leading-tight">
                                     {selected.subject}
                                 </h1>
                             </div>
 
                             {/* Bento Metadata Grid */}
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                <div className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
+                                <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-100 dark:border-white/5 shadow-sm">
                                     <div className="flex items-center gap-2 mb-1">
                                         <User className="w-4 h-4 text-indigo-500" />
                                         <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Sender</p>
                                     </div>
-                                    <p className="font-semibold text-slate-800 text-sm truncate">{selected.senderName || "—"}</p>
-                                    {selected.senderContact && <p className="text-xs text-slate-500 mt-1 truncate">{selected.senderContact}</p>}
+                                    <p className="font-semibold text-slate-800 dark:text-slate-100 text-sm truncate">{selected.senderName || "—"}</p>
+                                    {selected.senderContact && <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 truncate">{selected.senderContact}</p>}
                                 </div>
 
-                                <div className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
+                                <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-100 dark:border-white/5 shadow-sm">
                                     <div className="flex items-center gap-2 mb-1">
                                         <Calendar className="w-4 h-4 text-emerald-500" />
                                         <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Date Received</p>
                                     </div>
-                                    <p className="font-semibold text-slate-800 text-sm">
+                                    <p className="font-semibold text-slate-800 dark:text-slate-100 text-sm">
                                         {new Date(selected.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                                     </p>
                                 </div>
 
-                                <div className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
+                                <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-100 dark:border-white/5 shadow-sm">
                                     <div className="flex items-center gap-2 mb-1">
                                         <Link2 className="w-4 h-4 text-amber-500" />
                                         <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Reference</p>
                                     </div>
-                                    <p className="font-semibold text-slate-800 text-sm truncate">{selected.referenceNo || "None"}</p>
+                                    <p className="font-semibold text-slate-800 dark:text-slate-100 text-sm truncate">{selected.referenceNo || "None"}</p>
                                     {selected.referenceDate && (
-                                        <p className="text-xs text-slate-500 mt-1">Ref: {new Date(selected.referenceDate).toLocaleDateString()}</p>
+                                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Ref: {new Date(selected.referenceDate).toLocaleDateString()}</p>
                                     )}
                                 </div>
 
-                                <div className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
+                                <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-100 dark:border-white/5 shadow-sm">
                                     <div className="flex items-center gap-2 mb-1">
                                         <Inbox className="w-4 h-4 text-rose-500" />
                                         <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Department</p>
                                     </div>
-                                    <p className="font-semibold text-slate-800 text-sm truncate">{selected.department?.name || "General"}</p>
+                                    <p className="font-semibold text-slate-800 dark:text-slate-100 text-sm truncate">{selected.department?.name || "General"}</p>
                                 </div>
                             </div>
 
@@ -432,7 +432,7 @@ const InwardManagement = () => {
                             {selected.description && (
                                 <div>
                                     <p className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-2">Description / Remarks</p>
-                                    <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm text-slate-700 leading-relaxed text-[15px]">
+                                    <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-100 dark:border-white/5 shadow-sm text-slate-700 dark:text-slate-300 leading-relaxed text-[15px]">
                                         {selected.description}
                                     </div>
                                 </div>
@@ -449,8 +449,8 @@ const InwardManagement = () => {
                                         </p>
                                     </div>
 
-                                    <div className="bg-white border flex flex-col border-slate-100 rounded-2xl shadow-sm overflow-hidden">
-                                        <div className="p-3 bg-slate-50/50 border-b border-slate-100 flex flex-wrap gap-2 items-center justify-between">
+                                    <div className="bg-white dark:bg-slate-900 border flex flex-col border-slate-100 dark:border-white/5 rounded-2xl shadow-sm overflow-hidden">
+                                        <div className="p-3 bg-slate-50/50 dark:bg-black/20 border-b border-slate-100 dark:border-white/5 flex flex-wrap gap-2 items-center justify-between">
                                             {Array.from(new Set(documents.map(d => d.heading).filter(Boolean))).length > 0 && !isNewHeading ? (
                                                 <Select
                                                     value={uploadHeading}
@@ -582,7 +582,7 @@ const InwardManagement = () => {
                                         <Link2 className="w-4 h-4" /> Linked Record Files
                                     </p>
 
-                                    <div className="bg-white border rounded-2xl border-slate-100 shadow-sm p-2 overflow-y-auto max-h-[350px]">
+                                    <div className="bg-white dark:bg-slate-900 border rounded-2xl border-slate-100 dark:border-white/5 shadow-sm p-2 overflow-y-auto max-h-[350px]">
                                         {(!selected.files || selected.files.length === 0) ? (
                                             <div className="text-center py-10 text-slate-400 text-sm flex flex-col items-center gap-2">
                                                 <Link2 className="w-8 h-8 opacity-20" />
@@ -619,7 +619,7 @@ const InwardManagement = () => {
                         </div>
                     )}
 
-                    <DialogFooter className="px-8 py-4 bg-white border-t border-slate-100 flex-row justify-between sm:justify-between items-center shrink-0">
+                    <DialogFooter className="px-8 py-4 bg-white dark:bg-slate-950 border-t border-slate-100 dark:border-white/5 flex-row justify-between sm:justify-between items-center shrink-0">
                         <Button
                             variant="ghost"
                             size="sm"

@@ -1,4 +1,5 @@
-import { Bell, User, CheckCheck, Plus, ChevronRight, Upload, PencilLine, PlusCircle } from "lucide-react";
+import { Bell, User, CheckCheck, Plus, ChevronRight, Upload, PencilLine, PlusCircle, Sun, Moon } from "lucide-react";
+import { useTheme } from "@/components/theme-provider";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,6 +18,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 const DashboardHeader = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { theme, setTheme } = useTheme();
   const user = JSON.parse(localStorage.getItem("dms_user") || '{"email":"user@gov","role":"officer"}');
   const { notifications, unreadCount, markAllRead, markRead, refresh } = useNotifications();
 
@@ -82,6 +84,21 @@ const DashboardHeader = () => {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu> */}
+
+        {/* Theme Toggle */}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-9 w-9 rounded-full hover:bg-muted/60"
+          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+        >
+          {theme === "dark" ? (
+            <Sun className="w-[18px] h-[18px] text-foreground/80" />
+          ) : (
+            <Moon className="w-[18px] h-[18px] text-foreground/80" />
+          )}
+          <span className="sr-only">Toggle theme</span>
+        </Button>
 
         {/* Notifications */}
         <DropdownMenu onOpenChange={(open) => { if (open) refresh(); }}>

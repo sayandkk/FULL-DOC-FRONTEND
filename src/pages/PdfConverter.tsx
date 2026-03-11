@@ -12,7 +12,7 @@ const CONVERT_API_URL = import.meta.env.VITE_API_URL ? "/convert" : "http://loca
 const PdfConverter = () => {
     return (
         <div className="space-y-8 max-w-6xl mx-auto pb-12">
-            <div className="bg-slate-900 rounded-3xl p-8 sm:p-12 text-white shadow-xl relative overflow-hidden">
+            <div className="bg-slate-900 dark:bg-black rounded-3xl p-8 sm:p-12 text-white shadow-xl relative overflow-hidden">
                 <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
                 <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none"></div>
 
@@ -152,24 +152,24 @@ const ConverterCard = ({ title, description, accept, endpoint, targetExtension, 
     };
 
     return (
-        <Card className="border-0 shadow-sm bg-white/60 backdrop-blur-xl ring-1 ring-slate-200/50 overflow-hidden relative group transition-all hover:shadow-md hover:bg-white/80">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50/50 rounded-bl-[100px] -z-10 transition-transform group-hover:scale-110"></div>
+        <Card className="border-0 shadow-sm bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl ring-1 ring-slate-200/50 dark:ring-white/5 overflow-hidden relative group transition-all hover:shadow-md hover:bg-white/80 dark:hover:bg-slate-900/80">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50/50 dark:bg-indigo-500/5 rounded-bl-[100px] -z-10 transition-transform group-hover:scale-110"></div>
 
             <CardHeader className="pb-4">
                 <div className="flex items-center gap-3 mb-1">
-                    <div className="p-2 bg-indigo-50 rounded-lg text-indigo-600">
+                    <div className="p-2 bg-indigo-50 dark:bg-indigo-950/50 rounded-lg text-indigo-600 dark:text-indigo-400">
                         <FileType className="w-5 h-5" />
                     </div>
-                    <CardTitle className="text-xl font-bold text-slate-900">{title}</CardTitle>
+                    <CardTitle className="text-xl font-bold text-slate-900 dark:text-slate-100">{title}</CardTitle>
                 </div>
-                <CardDescription className="text-slate-500 font-medium">{description}</CardDescription>
+                <CardDescription className="text-slate-500 dark:text-slate-400 font-medium">{description}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
                 <div
                     className={`relative border-2 border-dashed rounded-2xl p-8 sm:p-12 text-center transition-all cursor-pointer overflow-hidden ${isHovering
-                        ? "border-indigo-400 bg-indigo-50/50 shadow-inner"
-                        : "border-slate-200 hover:border-indigo-300 hover:bg-slate-50/50"
-                        } ${file ? "bg-indigo-50/30 border-indigo-200" : ""}`}
+                        ? "border-indigo-400 bg-indigo-50/50 dark:bg-indigo-900/20 shadow-inner"
+                        : "border-slate-200 dark:border-white/10 hover:border-indigo-300 dark:hover:border-indigo-500/30 hover:bg-slate-50/50 dark:hover:bg-black/20"
+                        } ${file ? "bg-indigo-50/30 dark:bg-indigo-950/20 border-indigo-200 dark:border-indigo-500/30" : ""}`}
                     onDragOver={handleDragOver}
                     onDragLeave={handleDragLeave}
                     onDrop={handleDrop}
@@ -185,25 +185,25 @@ const ConverterCard = ({ title, description, accept, endpoint, targetExtension, 
 
                     {file ? (
                         <div className="flex flex-col items-center gap-3 relative z-10 animate-in fade-in zoom-in duration-300">
-                            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center text-green-600 shadow-sm mb-2">
+                            <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center text-green-600 dark:text-green-400 shadow-sm mb-2">
                                 <CheckCircle className="w-8 h-8" />
                             </div>
-                            <p className="font-bold text-slate-800 text-lg truncate max-w-[200px] sm:max-w-xs">
+                            <p className="font-bold text-slate-800 dark:text-slate-200 text-lg truncate max-w-[200px] sm:max-w-xs">
                                 {file.name}
                             </p>
-                            <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-white text-slate-500 shadow-sm border border-slate-100">
+                            <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 shadow-sm border border-slate-100 dark:border-white/5">
                                 {(file.size / 1024 / 1024).toFixed(2)} MB
                             </span>
                         </div>
                     ) : (
                         <div className="flex flex-col items-center gap-3 relative z-10">
-                            <div className={`w-16 h-16 rounded-full flex items-center justify-center mb-2 transition-colors ${isHovering ? 'bg-indigo-100 text-indigo-600' : 'bg-slate-100 text-slate-400'}`}>
+                            <div className={`w-16 h-16 rounded-full flex items-center justify-center mb-2 transition-colors ${isHovering ? 'bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400' : 'bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500'}`}>
                                 <UploadCloud className="w-8 h-8" />
                             </div>
-                            <p className="font-bold text-slate-700 text-lg">
+                            <p className="font-bold text-slate-700 dark:text-slate-200 text-lg">
                                 {isHovering ? "Drop it here!" : "Click or drag file here"}
                             </p>
-                            <p className="text-sm text-slate-500 font-medium">
+                            <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">
                                 Supported formats: {type === "word-to-pdf" ? ".doc, .docx" : type === "image-to-pdf" ? ".jpg, .png" : ".pdf"}
                             </p>
                         </div>
