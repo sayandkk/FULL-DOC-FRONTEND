@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { UploadCloud, FileType, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
+import { UploadCloud, FileType, CheckCircle, AlertCircle, Loader2, Layers, Scissors, X, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Toaster, toast } from "sonner";
@@ -49,6 +49,24 @@ const PdfConverter = () => {
                     targetExtension=".pdf"
                     type="image-to-pdf"
                 />
+                <ConverterCard
+                    title="Merge PDFs"
+                    description="Combine multiple PDF files into one."
+                    accept=".pdf,application/pdf"
+                    endpoint={`${CONVERT_API_URL}/merge-pdfs`}
+                    targetExtension=".pdf"
+                    type="merge-pdf"
+                    multiple
+                />
+                <ConverterCard
+                    title="Split PDF"
+                    description="Extract specific pages from a PDF."
+                    accept=".pdf,application/pdf"
+                    endpoint={`${CONVERT_API_URL}/split-pdf`}
+                    targetExtension=".pdf"
+                    type="split-pdf"
+                    showRangeInput
+                />
             </div>
         </div>
     );
@@ -60,13 +78,16 @@ interface ConverterCardProps {
     accept: string;
     endpoint: string;
     targetExtension: string;
-    type: "word-to-pdf" | "pdf-to-word" | "image-to-pdf";
+    type: "word-to-pdf" | "pdf-to-word" | "image-to-pdf" | "merge-pdf" | "split-pdf";
+    multiple?: boolean;
+    showRangeInput?: boolean;
 }
 
-const ConverterCard = ({ title, description, accept, endpoint, targetExtension, type }: ConverterCardProps) => {
-    const [file, setFile] = useState<File | null>(null);
+const ConverterCard = ({ title, description, accept, endpoint, targetExtension, type, multiple, showRangeInput }: ConverterCardProps) => {
+    const [files, setFiles] = useState<File[]>([]);
     const [isHovering, setIsHovering] = useState(false);
     const [isConverting, setIsConverting] = useState(false);
+    const [pageRange, setPageRange] = useState("1-end");
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleDragOver = (e: any) => {
@@ -82,39 +103,60 @@ const ConverterCard = ({ title, description, accept, endpoint, targetExtension, 
         e.preventDefault();
         setIsHovering(false);
         if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-            validateAndSetFile(e.dataTransfer.files[0]);
+            handleFiles(Array.from(e.dataTransfer.files));
         }
     };
 
     const handleFileChange = (e: any) => {
         if (e.target.files && e.target.files.length > 0) {
-            validateAndSetFile(e.target.files[0]);
+            handleFiles(Array.from(e.target.files));
         }
     };
 
-    const validateAndSetFile = (selectedFile: File) => {
+    const handleFiles = (incomingFiles: File[]) => {
+        const validated = incomingFiles.filter(f => validateFile(f));
+        if (multiple) {
+            setFiles(prev => [...prev, ...validated]);
+        } else if (validated.length > 0) {
+            setFiles([validated[0]]);
+        }
+    };
+
+    const validateFile = (selectedFile: File) => {
         // Basic validation
-        if (type === "pdf-to-word" && !selectedFile.name.toLowerCase().endsWith(".pdf")) {
-            toast.error("Please select a valid PDF file");
-            return;
+        if ((type === "pdf-to-word" || type === "split-pdf" || type === "merge-pdf") && !selectedFile.name.toLowerCase().endsWith(".pdf")) {
+            toast.error(`${selectedFile.name} is not a valid PDF file`);
+            return false;
         }
         if (type === "word-to-pdf" && !selectedFile.name.toLowerCase().match(/\.(doc|docx)$/)) {
             toast.error("Please select a valid Word file (.doc or .docx)");
-            return;
+            return false;
         }
         if (type === "image-to-pdf" && !selectedFile.name.toLowerCase().match(/\.(jpg|jpeg|png)$/)) {
             toast.error("Please select a valid Image file (.jpg, .jpeg, .png)");
-            return;
+            return false;
         }
-        setFile(selectedFile);
+        return true;
+    };
+
+    const removeFile = (index: number) => {
+        setFiles(prev => prev.filter((_, i) => i !== index));
     };
 
     const handleConvert = async () => {
-        if (!file) return;
+        if (files.length === 0) return;
 
         setIsConverting(true);
         const formData = new FormData();
-        formData.append("file", file);
+
+        if (multiple) {
+            files.forEach(f => formData.append("files", f));
+        } else {
+            formData.append("file", files[0]);
+            if (showRangeInput) {
+                formData.append("pages", pageRange);
+            }
+        }
 
         try {
             const response = await axios.post(endpoint, formData, {
@@ -130,8 +172,11 @@ const ConverterCard = ({ title, description, accept, endpoint, targetExtension, 
             link.href = url;
 
             // Generate output filename
-            const originalName = file.name.replace(/\.[^/.]+$/, "");
-            link.setAttribute("download", `${originalName}${targetExtension}`);
+            const originalName = files[0].name.replace(/\.[^/.]+$/, "");
+            const isZip = response.data.type === "application/zip";
+            const extension = isZip ? ".zip" : targetExtension;
+            const downloadName = type === "merge-pdf" ? (isZip ? "merged_documents.zip" : "merged_document.pdf") : `${originalName}${extension}`;
+            link.setAttribute("download", downloadName);
 
             document.body.appendChild(link);
             link.click();
@@ -141,7 +186,7 @@ const ConverterCard = ({ title, description, accept, endpoint, targetExtension, 
             window.URL.revokeObjectURL(url);
 
             toast.success("Conversion successful!");
-            setFile(null);
+            setFiles([]);
             if (fileInputRef.current) fileInputRef.current.value = "";
         } catch (error) {
             console.error("Conversion error:", error);
@@ -158,7 +203,7 @@ const ConverterCard = ({ title, description, accept, endpoint, targetExtension, 
             <CardHeader className="pb-4">
                 <div className="flex items-center gap-3 mb-1">
                     <div className="p-2 bg-indigo-50 dark:bg-indigo-950/50 rounded-lg text-indigo-600 dark:text-indigo-400">
-                        <FileType className="w-5 h-5" />
+                        {type === "merge-pdf" ? <Layers className="w-5 h-5" /> : type === "split-pdf" ? <Scissors className="w-5 h-5" /> : <FileType className="w-5 h-5" />}
                     </div>
                     <CardTitle className="text-xl font-bold text-slate-900 dark:text-slate-100">{title}</CardTitle>
                 </div>
@@ -166,10 +211,10 @@ const ConverterCard = ({ title, description, accept, endpoint, targetExtension, 
             </CardHeader>
             <CardContent className="space-y-6">
                 <div
-                    className={`relative border-2 border-dashed rounded-2xl p-8 sm:p-12 text-center transition-all cursor-pointer overflow-hidden ${isHovering
+                    className={`relative border-2 border-dashed rounded-2xl p-6 sm:p-10 text-center transition-all cursor-pointer overflow-hidden ${isHovering
                         ? "border-indigo-400 bg-indigo-50/50 dark:bg-indigo-900/20 shadow-inner"
                         : "border-slate-200 dark:border-white/10 hover:border-indigo-300 dark:hover:border-indigo-500/30 hover:bg-slate-50/50 dark:hover:bg-black/20"
-                        } ${file ? "bg-indigo-50/30 dark:bg-indigo-950/20 border-indigo-200 dark:border-indigo-500/30" : ""}`}
+                        } ${files.length > 0 ? "bg-indigo-50/30 dark:bg-indigo-950/20 border-indigo-200 dark:border-indigo-500/30" : ""}`}
                     onDragOver={handleDragOver}
                     onDragLeave={handleDragLeave}
                     onDrop={handleDrop}
@@ -180,20 +225,47 @@ const ConverterCard = ({ title, description, accept, endpoint, targetExtension, 
                         ref={fileInputRef}
                         onChange={handleFileChange}
                         accept={accept}
+                        multiple={multiple}
                         className="hidden"
                     />
 
-                    {file ? (
+                    {files.length > 0 ? (
                         <div className="flex flex-col items-center gap-3 relative z-10 animate-in fade-in zoom-in duration-300">
-                            <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center text-green-600 dark:text-green-400 shadow-sm mb-2">
-                                <CheckCircle className="w-8 h-8" />
-                            </div>
-                            <p className="font-bold text-slate-800 dark:text-slate-200 text-lg truncate max-w-[200px] sm:max-w-xs">
-                                {file.name}
-                            </p>
-                            <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 shadow-sm border border-slate-100 dark:border-white/5">
-                                {(file.size / 1024 / 1024).toFixed(2)} MB
-                            </span>
+                            {multiple ? (
+                                <div className="w-full space-y-2 max-h-48 overflow-y-auto pr-2 custom-scrollbar">
+                                    {files.map((f, idx) => (
+                                        <div key={idx} className="flex items-center justify-between bg-white dark:bg-slate-800 p-2 rounded-xl border border-slate-100 dark:border-white/5 shadow-sm group/item">
+                                            <div className="flex items-center gap-2 overflow-hidden">
+                                                <FileType className="w-4 h-4 text-indigo-400 shrink-0" />
+                                                <span className="text-xs font-bold text-slate-700 dark:text-slate-200 truncate">{f.name}</span>
+                                            </div>
+                                            <button
+                                                onClick={(e) => { e.stopPropagation(); removeFile(idx); }}
+                                                className="p-1 text-slate-400 hover:text-red-500 transition-colors"
+                                            >
+                                                <X className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                    ))}
+                                    <div className="pt-2">
+                                        <div className="flex items-center justify-center gap-2 text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 font-bold text-sm">
+                                            <Plus className="w-4 h-4" /> Add more files
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : (
+                                <>
+                                    <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center text-green-600 dark:text-green-400 shadow-sm mb-2">
+                                        <CheckCircle className="w-8 h-8" />
+                                    </div>
+                                    <p className="font-bold text-slate-800 dark:text-slate-200 text-lg truncate max-w-[200px] sm:max-w-xs">
+                                        {files[0].name}
+                                    </p>
+                                    <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 shadow-sm border border-slate-100 dark:border-white/5">
+                                        {(files[0].size / 1024 / 1024).toFixed(2)} MB
+                                    </span>
+                                </>
+                            )}
                         </div>
                     ) : (
                         <div className="flex flex-col items-center gap-3 relative z-10">
@@ -210,20 +282,33 @@ const ConverterCard = ({ title, description, accept, endpoint, targetExtension, 
                     )}
                 </div>
 
+                {showRangeInput && files.length > 0 && (
+                    <div className="space-y-2 animate-in slide-in-from-top-2 duration-300">
+                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Page Range</label>
+                        <input
+                            type="text"
+                            value={pageRange}
+                            onChange={(e) => setPageRange(e.target.value)}
+                            placeholder="e.g. 1-3, 5, 7-end"
+                            className="w-full h-12 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-white/5 px-4 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all"
+                        />
+                    </div>
+                )}
+
                 <Button
-                    className="w-full h-14 rounded-xl text-base font-bold transition-all"
+                    className="w-full h-14 rounded-xl text-base font-bold transition-all shadow-lg shadow-indigo-500/10"
                     size="lg"
-                    disabled={!file || isConverting}
+                    disabled={files.length === 0 || isConverting}
                     onClick={handleConvert}
-                    variant={file ? "default" : "secondary"}
+                    variant={files.length > 0 ? "default" : "secondary"}
                 >
                     {isConverting ? (
                         <span className="flex items-center gap-2">
                             <Loader2 className="w-5 h-5 animate-spin" />
-                            Converting Document...
+                            Processing...
                         </span>
                     ) : (
-                        `Convert to ${targetExtension.replace('.', '').toUpperCase()}`
+                        type === "merge-pdf" ? `Merge ${files.length} PDFs` : type === "split-pdf" ? "Split PDF" : `Convert to ${targetExtension.replace('.', '').toUpperCase()}`
                     )}
                 </Button>
             </CardContent>
