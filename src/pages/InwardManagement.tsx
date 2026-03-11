@@ -352,192 +352,262 @@ const InwardManagement = () => {
 
             {/* Detail Dialog */}
             <Dialog open={!!selected} onOpenChange={() => setSelected(null)}>
-                <DialogContent className="max-w-3xl max-h-[90vh] flex flex-col overflow-hidden rounded-2xl p-0 border-none shadow-2xl supports-[backdrop-filter]:bg-background/80 backdrop-blur-xl">
-                    <div className="px-6 py-5 bg-gradient-to-r from-indigo-50/50 to-transparent border-b border-indigo-100/50 shrink-0">
-                        <div className="flex items-center justify-between">
-                            <DialogTitle className="text-xl font-sans text-indigo-950 flex items-center gap-3">
-                                <FileText className="w-5 h-5 text-indigo-500" />
-                                {selected?.inwardNumber}
-                            </DialogTitle>
-                            <Badge variant="outline" className="bg-white border-indigo-200 text-indigo-700 rounded-full font-semibold px-3 py-1 text-xs">
-                                {selected ? `${typeLabels[selected.inwardType]}` : ""}
+                <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col overflow-hidden rounded-[24px] p-0 border-none shadow-2xl bg-white supports-[backdrop-filter]:bg-white/95 backdrop-blur-3xl">
+
+                    {/* Header Strip */}
+                    <div className="px-8 py-5 flex items-center justify-between shrink-0 border-b border-slate-100">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-full bg-indigo-50 flex items-center justify-center">
+                                <FileText className="w-5 h-5 text-indigo-600" />
+                            </div>
+                            <div>
+                                <h2 className="text-xl font-bold font-sans text-slate-900 tracking-tight">
+                                    {selected?.inwardNumber}
+                                </h2>
+                                <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest mt-0.5">
+                                    Inward Record
+                                </p>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            <Badge variant="outline" className="bg-indigo-50 border-indigo-200 text-indigo-700 px-3 py-1 text-sm font-semibold rounded-full">
+                                {selected ? typeLabels[selected.inwardType] : ""}
                             </Badge>
                         </div>
                     </div>
+
                     {selected && (
-                        <div className="flex-1 overflow-y-auto p-6">
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                {/* Left Column: Main Content */}
-                                <div className="md:col-span-2 space-y-6">
-                                    {/* Subject block */}
-                                    <div>
-                                        <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-widest mb-1.5">Subject</h3>
-                                        <p className="text-xl font-bold text-slate-900 leading-snug">{selected.subject}</p>
+                        <div className="flex-1 overflow-y-auto px-8 py-6 space-y-8 bg-slate-50/50">
+
+                            {/* Subject Area */}
+                            <div>
+                                <p className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-2">Subject</p>
+                                <h1 className="text-2xl md:text-3xl font-bold font-sans text-slate-900 leading-tight">
+                                    {selected.subject}
+                                </h1>
+                            </div>
+
+                            {/* Bento Metadata Grid */}
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                <div className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <User className="w-4 h-4 text-indigo-500" />
+                                        <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Sender</p>
+                                    </div>
+                                    <p className="font-semibold text-slate-800 text-sm truncate">{selected.senderName || "—"}</p>
+                                    {selected.senderContact && <p className="text-xs text-slate-500 mt-1 truncate">{selected.senderContact}</p>}
+                                </div>
+
+                                <div className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <Calendar className="w-4 h-4 text-emerald-500" />
+                                        <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Date Received</p>
+                                    </div>
+                                    <p className="font-semibold text-slate-800 text-sm">
+                                        {new Date(selected.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                                    </p>
+                                </div>
+
+                                <div className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <Link2 className="w-4 h-4 text-amber-500" />
+                                        <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Reference</p>
+                                    </div>
+                                    <p className="font-semibold text-slate-800 text-sm truncate">{selected.referenceNo || "None"}</p>
+                                    {selected.referenceDate && (
+                                        <p className="text-xs text-slate-500 mt-1">Ref: {new Date(selected.referenceDate).toLocaleDateString()}</p>
+                                    )}
+                                </div>
+
+                                <div className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <Inbox className="w-4 h-4 text-rose-500" />
+                                        <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Department</p>
+                                    </div>
+                                    <p className="font-semibold text-slate-800 text-sm truncate">{selected.department?.name || "General"}</p>
+                                </div>
+                            </div>
+
+                            {/* Description */}
+                            {selected.description && (
+                                <div>
+                                    <p className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-2">Description / Remarks</p>
+                                    <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm text-slate-700 leading-relaxed text-[15px]">
+                                        {selected.description}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Two-Column Layout for Files & Attachments */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+                                {/* Attached Documents */}
+                                <div className="space-y-4">
+                                    <div className="flex items-center justify-between">
+                                        <p className="text-sm font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                                            <FileText className="w-4 h-4" /> Attached Documents
+                                        </p>
                                     </div>
 
-                                    {/* Description block */}
-                                    {selected.description && (
-                                        <div>
-                                            <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-widest mb-1.5">Description</h3>
-                                            <div className="bg-slate-50 border border-slate-100 p-4 rounded-xl text-slate-700 leading-relaxed text-sm">
-                                                {selected.description}
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {/* Linked File Info */}
-                                    {selected.files && selected.files.length > 0 && (
-                                        <div>
-                                            <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-widest mb-2 flex items-center gap-1.5">
-                                                <Link2 className="w-4 h-4" /> Linked Files
-                                            </h3>
-                                            <div className="grid gap-2">
-                                                {selected.files.map(f => (
-                                                    <div key={f.id} className="flex items-center justify-between p-3 bg-indigo-50/50 border border-indigo-100/50 rounded-xl hover:bg-indigo-50 transition-colors">
-                                                        <div className="min-w-0">
-                                                            <p className="text-sm font-bold text-indigo-900 flex items-center gap-1.5">
-                                                                <FileText className="w-3.5 h-3.5 text-indigo-500" />
-                                                                {f.fileNumber}
-                                                            </p>
-                                                            <p className="text-xs text-indigo-700/70 truncate mt-0.5">{f.subject}</p>
-                                                        </div>
-                                                        <span className={`ml-3 shrink-0 text-[10px] font-bold px-2.5 py-1 rounded-full ${f.status === 'APPROVED' ? 'bg-green-100 text-green-700' :
-                                                            f.status === 'REJECTED' ? 'bg-red-100 text-red-700' :
-                                                                f.status === 'CLOSED' ? 'bg-slate-200 text-slate-700' :
-                                                                    'bg-indigo-100 text-indigo-700'
-                                                            }`}>{f.status}</span>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {/* Documents Section */}
-                                    <div className="pt-2">
-                                        <div className="flex flex-col gap-4 mb-4">
-                                            <div className="flex items-center justify-between">
-                                                <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-widest flex items-center gap-1.5">
-                                                    <FileText className="w-4 h-4" /> Attached Documents
-                                                </h3>
-                                            </div>
-
-                                            <div className="flex gap-2">
-                                                {Array.from(new Set(documents.map(d => d.heading).filter(Boolean))).length > 0 && !isNewHeading ? (
-                                                    <Select
+                                    <div className="bg-white border flex flex-col border-slate-100 rounded-2xl shadow-sm overflow-hidden">
+                                        <div className="p-3 bg-slate-50/50 border-b border-slate-100 flex flex-wrap gap-2 items-center justify-between">
+                                            {Array.from(new Set(documents.map(d => d.heading).filter(Boolean))).length > 0 && !isNewHeading ? (
+                                                <Select
+                                                    value={uploadHeading}
+                                                    onValueChange={(val) => {
+                                                        if (val === "NEW_HEADING_OPTION") {
+                                                            setIsNewHeading(true);
+                                                            setUploadHeading("");
+                                                        } else {
+                                                            setUploadHeading(val);
+                                                        }
+                                                    }}
+                                                >
+                                                    <SelectTrigger className="h-8 text-xs font-medium bg-white w-[160px]">
+                                                        <SelectValue placeholder="Heading..." />
+                                                    </SelectTrigger>
+                                                    <SelectContent position="popper">
+                                                        {Array.from(new Set(documents.map(d => d.heading).filter(Boolean))).map((h) => (
+                                                            <SelectItem key={h as string} value={h as string}>{h as string}</SelectItem>
+                                                        ))}
+                                                        <SelectItem value="NEW_HEADING_OPTION" className="text-indigo-600 font-bold">
+                                                            + New Heading
+                                                        </SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                            ) : (
+                                                <div className="flex gap-1 items-center">
+                                                    <Input
+                                                        placeholder="New Heading..."
                                                         value={uploadHeading}
-                                                        onValueChange={(val) => {
-                                                            if (val === "NEW_HEADING_OPTION") {
-                                                                setIsNewHeading(true);
-                                                                setUploadHeading("");
-                                                            } else {
-                                                                setUploadHeading(val);
-                                                            }
-                                                        }}
-                                                    >
-                                                        <SelectTrigger className="h-8 text-sm w-[200px]">
-                                                            <SelectValue placeholder="Select heading..." />
-                                                        </SelectTrigger>
-                                                        <SelectContent position="popper">
-                                                            {Array.from(new Set(documents.map(d => d.heading).filter(Boolean))).map((h) => (
-                                                                <SelectItem key={h as string} value={h as string}>{h as string}</SelectItem>
-                                                            ))}
-                                                            <SelectItem value="NEW_HEADING_OPTION" className="text-muted-foreground font-medium">
-                                                                + Create New Heading
-                                                            </SelectItem>
-                                                        </SelectContent>
-                                                    </Select>
-                                                ) : (
-                                                    <div className="flex gap-1 items-center">
-                                                        <Input
-                                                            placeholder="Heading..."
-                                                            value={uploadHeading}
-                                                            onChange={(e) => setUploadHeading(e.target.value)}
-                                                            className="h-8 text-sm w-[200px]"
-                                                            autoFocus={isNewHeading}
-                                                        />
-                                                        {Array.from(new Set(documents.map(d => d.heading).filter(Boolean))).length > 0 && (
-                                                            <Button
-                                                                size="icon"
-                                                                variant="ghost"
-                                                                className="h-8 w-8"
-                                                                onClick={() => setIsNewHeading(false)}
-                                                                title="Select existing heading"
-                                                            >
-                                                                <XCircle className="w-4 h-4" />
-                                                            </Button>
-                                                        )}
-                                                    </div>
-                                                )}
-                                                <div className="relative shrink-0">
-                                                    <input
-                                                        type="file"
-                                                        id="doc-upload"
-                                                        className="hidden"
-                                                        onChange={handleUpload}
-                                                        disabled={uploading}
+                                                        onChange={(e) => setUploadHeading(e.target.value)}
+                                                        className="h-8 text-xs w-[160px] bg-white text-slate-800"
+                                                        autoFocus={isNewHeading}
                                                     />
-                                                    <Button size="sm" variant="outline" className="h-8 gap-2" disabled={uploading}
-                                                        onClick={() => document.getElementById("doc-upload")?.click()}>
-                                                        {uploading ? (
-                                                            <RefreshCw className="w-3 h-3 animate-spin" />
-                                                        ) : (
-                                                            <Upload className="w-3 h-3" />
-                                                        )}
-                                                        Upload Version
-                                                    </Button>
+                                                    {Array.from(new Set(documents.map(d => d.heading).filter(Boolean))).length > 0 && (
+                                                        <Button
+                                                            size="icon"
+                                                            variant="ghost"
+                                                            className="h-8 w-8 text-slate-400 hover:text-slate-600"
+                                                            onClick={() => setIsNewHeading(false)}
+                                                        >
+                                                            <XCircle className="w-4 h-4" />
+                                                        </Button>
+                                                    )}
                                                 </div>
+                                            )}
+
+                                            <div className="relative shrink-0">
+                                                <input
+                                                    type="file"
+                                                    id="doc-upload"
+                                                    className="hidden"
+                                                    onChange={handleUpload}
+                                                    disabled={uploading}
+                                                />
+                                                <Button size="sm" variant="default" className="h-8 gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm rounded-lg text-xs px-3" disabled={uploading}
+                                                    onClick={() => document.getElementById("doc-upload")?.click()}>
+                                                    {uploading ? (
+                                                        <RefreshCw className="w-3 h-3 animate-spin" />
+                                                    ) : (
+                                                        <Upload className="w-3 h-3" />
+                                                    )}
+                                                    Upload
+                                                </Button>
                                             </div>
                                         </div>
 
-                                        {docsLoading ? (
-                                            <div className="text-center py-4 text-muted-foreground text-sm">Loading documents...</div>
-                                        ) : documents.length === 0 ? (
-                                            <div className="text-center py-6 border rounded-md border-dashed text-muted-foreground text-sm">
-                                                No documents attached yet
-                                            </div>
-                                        ) : (
-                                            <div className="space-y-4 max-h-[300px] overflow-y-auto pr-1">
-                                                {Object.entries(documents.reduce((acc: Record<string, Document[]>, doc) => {
-                                                    const h = doc.heading || "General Documents";
-                                                    if (!acc[h]) acc[h] = [];
-                                                    acc[h].push(doc);
-                                                    return acc;
-                                                }, {})).map(([heading, docs]) => (
-                                                    <div key={heading} className="space-y-2">
-                                                        <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{heading}</h4>
-                                                        {docs.map((doc) => (
-                                                            <div key={doc.id} className="flex items-center justify-between p-2 rounded border bg-card/50 text-sm">
-                                                                <div className="flex items-center gap-3 overflow-hidden">
-                                                                    <div className="w-8 h-8 rounded bg-primary/10 flex items-center justify-center shrink-0 text-primary font-bold text-xs">
-                                                                        v{doc.version}
+                                        <div className="p-2 overflow-y-auto max-h-[300px]">
+                                            {docsLoading ? (
+                                                <div className="text-center py-6 text-slate-400 text-sm">Loading documents...</div>
+                                            ) : documents.length === 0 ? (
+                                                <div className="text-center py-8 text-slate-400 text-sm flex flex-col items-center gap-2">
+                                                    <FileUp className="w-8 h-8 opacity-20" />
+                                                    No documents attached.
+                                                </div>
+                                            ) : (
+                                                <div className="space-y-4 rounded-xl">
+                                                    {Object.entries(documents.reduce((acc: Record<string, Document[]>, doc) => {
+                                                        const h = doc.heading || "General";
+                                                        if (!acc[h]) acc[h] = [];
+                                                        acc[h].push(doc);
+                                                        return acc;
+                                                    }, {})).map(([heading, docs]) => (
+                                                        <div key={heading} className="space-y-1.5 p-2">
+                                                            <h4 className="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-2 mb-2">{heading}</h4>
+                                                            {docs.map((doc) => (
+                                                                <div key={doc.id} className="group flex items-center justify-between p-2.5 rounded-lg hover:bg-slate-50 transition-colors border border-transparent hover:border-slate-100">
+                                                                    <div className="flex items-center gap-3 overflow-hidden">
+                                                                        <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center shrink-0 text-indigo-600 font-bold text-xs ring-1 ring-indigo-100/50">
+                                                                            v{doc.version}
+                                                                        </div>
+                                                                        <div className="min-w-0">
+                                                                            <p className="text-[13px] font-semibold text-slate-700 truncate">{doc.originalName}</p>
+                                                                            <p className="text-[11px] text-slate-400 font-medium">
+                                                                                {(doc.size / 1024).toFixed(1)} KB · {new Date(doc.createdAt).toLocaleDateString()}
+                                                                            </p>
+                                                                        </div>
                                                                     </div>
-                                                                    <div className="min-w-0">
-                                                                        <p className="font-medium truncate">{doc.originalName}</p>
-                                                                        <p className="text-xs text-muted-foreground">
-                                                                            {(doc.size / 1024).toFixed(1)} KB · {new Date(doc.createdAt).toLocaleDateString()}
-                                                                        </p>
+                                                                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                                        <Button size="icon" variant="ghost" className="h-7 w-7 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-md" onClick={() => handleDownload(doc)}>
+                                                                            <Download className="w-3.5 h-3.5" />
+                                                                        </Button>
+                                                                        {(!selected.files || selected.files.length === 0) && (
+                                                                            <Button
+                                                                                size="icon"
+                                                                                variant="ghost"
+                                                                                className="h-7 w-7 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-md"
+                                                                                onClick={() => {
+                                                                                    setDocToDelete({ id: doc.id, name: doc.originalName });
+                                                                                    setShowDeleteDocConfirm(true);
+                                                                                }}
+                                                                            >
+                                                                                <Trash2 className="w-3.5 h-3.5" />
+                                                                            </Button>
+                                                                        )}
                                                                     </div>
                                                                 </div>
-                                                                <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => handleDownload(doc)} title="Download">
-                                                                    <Download className="w-4 h-4 text-muted-foreground" />
-                                                                </Button>
-                                                                {/* Only allow delete if the inward hasn't been linked to any file yet */}
-                                                                {(!selected.files || selected.files.length === 0) && (
-                                                                    <Button
-                                                                        size="icon"
-                                                                        variant="ghost"
-                                                                        className="h-7 w-7 text-muted-foreground hover:text-destructive"
-                                                                        title="Delete attachment"
-                                                                        onClick={() => {
-                                                                            setDocToDelete({ id: doc.id, name: doc.originalName });
-                                                                            setShowDeleteDocConfirm(true);
-                                                                        }}
-                                                                    >
-                                                                        <Trash2 className="w-4 h-4" />
-                                                                    </Button>
-                                                                )}
-                                                            </div>
-                                                        ))}
+                                                            ))}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Linked Files */}
+                                <div className="space-y-4">
+                                    <p className="text-sm font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                                        <Link2 className="w-4 h-4" /> Linked Record Files
+                                    </p>
+
+                                    <div className="bg-white border rounded-2xl border-slate-100 shadow-sm p-2 overflow-y-auto max-h-[350px]">
+                                        {(!selected.files || selected.files.length === 0) ? (
+                                            <div className="text-center py-10 text-slate-400 text-sm flex flex-col items-center gap-2">
+                                                <Link2 className="w-8 h-8 opacity-20" />
+                                                Not linked to any registry file yet.
+                                            </div>
+                                        ) : (
+                                            <div className="space-y-2 p-1">
+                                                {selected.files.map(f => (
+                                                    <div key={f.id} className="group relative overflow-hidden flex flex-col p-4 bg-slate-50/50 border border-slate-100 hover:border-indigo-200 rounded-xl transition-all">
+                                                        <div className="absolute left-0 top-0 w-1 h-full bg-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                                        <div className="flex justify-between items-start mb-2">
+                                                            <p className="text-xs font-bold font-mono text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-100">
+                                                                {f.fileNumber}
+                                                            </p>
+                                                            <Badge variant="outline" className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 border-none ${f.status === 'APPROVED' ? 'bg-emerald-100 text-emerald-700' :
+                                                                f.status === 'REJECTED' ? 'bg-rose-100 text-rose-700' :
+                                                                    f.status === 'CLOSED' ? 'bg-slate-200 text-slate-700' :
+                                                                        'bg-indigo-100 text-indigo-700'
+                                                                }`}>
+                                                                {f.status}
+                                                            </Badge>
+                                                        </div>
+                                                        <p className="text-sm font-semibold text-slate-800 leading-snug line-clamp-2">
+                                                            {f.subject}
+                                                        </p>
                                                     </div>
                                                 ))}
                                             </div>
@@ -545,53 +615,24 @@ const InwardManagement = () => {
                                     </div>
                                 </div>
 
-                                {/* Right Column: Metadata Sidebar */}
-                                <div className="md:col-span-1 space-y-4">
-                                    <div className="bg-slate-50 border border-slate-100 rounded-xl p-5 space-y-5">
-                                        <div>
-                                            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Document Type</p>
-                                            <div className="flex items-center gap-2">
-                                                <Inbox className="w-4 h-4 text-indigo-500" />
-                                                <p className="font-semibold text-slate-800 text-sm">{typeLabels[selected.inwardType]}</p>
-                                            </div>
-                                        </div>
-
-                                        <div>
-                                            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Source / Sender</p>
-                                            <div className="flex items-center gap-2">
-                                                <User className="w-4 h-4 text-indigo-500" />
-                                                <p className="font-semibold text-slate-800 text-sm">{selected.senderName || "—"}</p>
-                                            </div>
-                                        </div>
-
-                                        <div>
-                                            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Received Date</p>
-                                            <div className="flex items-center gap-2">
-                                                <Calendar className="w-4 h-4 text-indigo-500" />
-                                                <p className="font-semibold text-slate-800 text-sm">{new Date(selected.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     )}
-                    <DialogFooter className="px-6 py-4 bg-slate-50/50 border-t border-slate-100 flex-row justify-between sm:justify-between items-center gap-2">
+
+                    <DialogFooter className="px-8 py-4 bg-white border-t border-slate-100 flex-row justify-between sm:justify-between items-center shrink-0">
                         <Button
-                            variant="destructive"
+                            variant="ghost"
                             size="sm"
                             onClick={() => setShowDeleteConfirm(true)}
                             disabled={deleting}
-                            className="gap-2"
+                            className="gap-2 text-rose-600 hover:text-rose-700 hover:bg-rose-50 rounded-lg px-4 transition-colors"
                         >
-                            {deleting ? (
-                                <RefreshCw className="w-3 h-3 animate-spin" />
-                            ) : (
-                                <Trash2 className="w-3 h-3" />
-                            )}
-                            {deleting ? "Deleting..." : "Delete Inward"}
+                            {deleting ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                            {deleting ? "Deleting..." : "Delete Permanently"}
                         </Button>
-                        <Button variant="outline" onClick={() => setSelected(null)}>Close</Button>
+                        <Button variant="default" onClick={() => setSelected(null)} className="rounded-full px-6 shadow-sm bg-slate-900 hover:bg-slate-800">
+                            Done Reading
+                        </Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
