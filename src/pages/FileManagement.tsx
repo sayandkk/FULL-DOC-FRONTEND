@@ -659,99 +659,119 @@ const FileManagement = () => {
             </Card>
 
             {/* File List */}
-            <Card className="shadow-card">
-                <CardHeader className="pb-3">
-                    <CardTitle className="text-lg font-sans flex items-center gap-2">
-                        <FolderOpen className="w-5 h-5 text-primary" /> Files
-                        <Badge variant="secondary" className="ml-2">{files.length}</Badge>
+            <Card className="shadow-card border-none bg-white/80 backdrop-blur-md overflow-hidden rounded-2xl">
+                <CardHeader className="pb-3 border-b border-black/5 bg-white/50">
+                    <CardTitle className="text-lg font-sans flex items-center justify-between">
+                        <div className="flex items-center gap-2 text-indigo-950">
+                            <FolderOpen className="w-5 h-5 text-indigo-600" />
+                            Files Registry
+                        </div>
+                        <Badge variant="secondary" className="bg-indigo-100 text-indigo-700 hover:bg-indigo-100 rounded-full px-3 shadow-none">
+                            {`${files.length} records`}
+                        </Badge>
                     </CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-0">
                     {loading ? (
-                        <div className="flex items-center justify-center py-12 text-muted-foreground">
-                            <RefreshCw className="w-5 h-5 animate-spin mr-2" /> Loading...
+                        <div className="flex items-center justify-center py-16 text-muted-foreground">
+                            <RefreshCw className="w-5 h-5 animate-spin mr-3 text-indigo-500" /> Loading records...
                         </div>
                     ) : files.length === 0 ? (
-                        <div className="text-center py-12 text-muted-foreground">
-                            <FolderOpen className="w-10 h-10 mx-auto mb-3 opacity-30" />
-                            <p>No files found</p>
-                            <Button variant="outline" size="sm" className="mt-3" onClick={() => setShowCreate(true)}>Create First File</Button>
+                        <div className="text-center py-16 text-muted-foreground">
+                            <div className="w-16 h-16 bg-indigo-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <FolderOpen className="w-8 h-8 text-indigo-300" />
+                            </div>
+                            <p className="font-medium text-foreground/80">No files found</p>
+                            <p className="text-sm mt-1">Adjust your filters or start by creating a new file.</p>
+                            <Button variant="default" className="mt-6 bg-indigo-600 hover:bg-indigo-700 rounded-full shadow-sm" onClick={() => setShowCreate(true)}>
+                                Create First File
+                            </Button>
                         </div>
                     ) : (
-                        <div className="space-y-2">
-                            {files.map((file) => (
-                                <div key={file.id}
-                                    className="flex items-center justify-between p-4 rounded-lg border border-border/50 hover:bg-muted/40 transition-colors cursor-pointer"
-                                    onClick={() => openFile(file)}>
-                                    <div className="flex items-center gap-4 min-w-0">
-                                        <div className="w-10 h-10 rounded-md bg-primary/10 flex items-center justify-center shrink-0">
-                                            <FolderOpen className="w-5 h-5 text-primary" />
+                        <div className="w-full text-sm">
+                            {/* Smart Table Header */}
+                            <div className="grid grid-cols-12 gap-4 p-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider bg-black/[0.02] border-b border-black/5">
+                                <div className="col-span-1 text-center">Date</div>
+                                <div className="col-span-2">Number</div>
+                                <div className="col-span-4">Subject & Details</div>
+                                <div className="col-span-2">Status</div>
+                                <div className="col-span-2">Attributes</div>
+                                <div className="col-span-1 text-right">Actions</div>
+                            </div>
+                            {/* Smart Table Body (Zebra striped) */}
+                            <div className="divide-y divide-black/5">
+                                {files.map((file, index) => (
+                                    <div key={file.id}
+                                        className={`grid grid-cols-12 gap-4 p-4 items-center group cursor-pointer transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-black/[0.01]'} hover:bg-indigo-50/50`}
+                                        onClick={() => openFile(file)}>
+                                        <div className="col-span-1 text-center text-xs text-muted-foreground whitespace-nowrap">
+                                            {new Date(file.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                                         </div>
-                                        <div className="min-w-0 flex items-center gap-3">
-                                            {isPullMode && (
-                                                <input
-                                                    type="checkbox"
-                                                    className="w-4 h-4 cursor-pointer mt-0.5 shrink-0"
-                                                    checked={selectedPullFiles.includes(file.id)}
-                                                    onChange={(e) => {
-                                                        e.stopPropagation();
-                                                        if (e.target.checked) setSelectedPullFiles([...selectedPullFiles, file.id]);
-                                                        else setSelectedPullFiles(selectedPullFiles.filter(id => id !== file.id));
-                                                    }}
-                                                    onClick={(e) => e.stopPropagation()}
-                                                    disabled={
-                                                        !(file.status === 'PENDING' || file.status === 'FORWARDED' || file.status === 'RETURNED') ||
-                                                        file.currentOwnerId === user?.id
-                                                    }
-                                                />
-                                            )}
-                                            <div>
-                                                <div className="flex items-center gap-2">
-                                                    <p className="font-medium text-sm truncate">{file.subject}</p>
-                                                    {file.workflowCategory && <Badge variant="outline" className="text-[10px] h-5">{file.workflowCategory.name}</Badge>}
-                                                    {(file as any).isMaster && <Badge variant="default" className="text-[10px] h-5 bg-indigo-500 hover:bg-indigo-600">Master File</Badge>}
-                                                </div>
-                                                <p className="text-xs text-muted-foreground">
-                                                    {file.fileNumber} · {file.department?.name || "—"}
-
-
-
-
-                                                </p>
+                                        <div className="col-span-2 font-medium text-foreground/80 truncate">
+                                            {file.fileNumber}
+                                            <p className="text-[11px] text-muted-foreground truncate">{file.department?.name || "—"}</p>
+                                        </div>
+                                        <div className="col-span-4 min-w-0 pr-4">
+                                            <div className="flex items-center gap-2">
+                                                {isPullMode && (
+                                                    <input
+                                                        type="checkbox"
+                                                        className="w-4 h-4 cursor-pointer shrink-0 accent-indigo-600 rounded"
+                                                        checked={selectedPullFiles.includes(file.id)}
+                                                        onChange={(e) => {
+                                                            e.stopPropagation();
+                                                            if (e.target.checked) setSelectedPullFiles([...selectedPullFiles, file.id]);
+                                                            else setSelectedPullFiles(selectedPullFiles.filter(id => id !== file.id));
+                                                        }}
+                                                        onClick={(e) => e.stopPropagation()}
+                                                        disabled={
+                                                            !(file.status === 'PENDING' || file.status === 'FORWARDED' || file.status === 'RETURNED') ||
+                                                            file.currentOwnerId === user?.id
+                                                        }
+                                                    />
+                                                )}
+                                                <p className="font-semibold text-foreground/90 truncate group-hover:text-indigo-700 transition-colors" title={file.subject}>{file.subject}</p>
+                                            </div>
+                                            <div className="flex items-center gap-2 mt-1 flex-wrap">
+                                                {file.workflowCategory && <Badge variant="outline" className="text-[10px] h-5 bg-white border-black/10 text-slate-600 rounded-sm font-medium">{`${file.workflowCategory.name}`}</Badge>}
+                                                {(file as any).isMaster && <Badge variant="default" className="text-[10px] h-5 bg-indigo-500 hover:bg-indigo-600 rounded-sm font-medium">Master File</Badge>}
+                                                {file.dueDate && file.status === 'PENDING' && new Date(file.dueDate) < new Date() && (
+                                                    <Badge variant="destructive" className="text-[10px] h-5 rounded-sm font-medium px-1.5 shadow-none border-0 bg-red-100 text-red-700">
+                                                        Overdue
+                                                    </Badge>
+                                                )}
                                             </div>
                                         </div>
-                                    </div>
-                                    <div className="flex items-center gap-3 shrink-0">
-                                        <StatusBadge file={file} />
-                                        {file.priority && (
-                                            <Badge variant="outline" className={`text-[10px] h-5 ${priorityColors[file.priority] || "bg-slate-100 text-slate-700"}`}>
-                                                {file.priority}
-                                            </Badge>
-                                        )}
-                                        {file.currentStage && <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">Stage {file.currentStage.stageOrder}</span>}
-                                        {file.dueDate && file.status === 'PENDING' && new Date(file.dueDate) < new Date() && (
-                                            <Badge variant="destructive" className="text-[10px] h-5">
-                                                Overdue
-                                            </Badge>
-                                        )}
-                                        <span className="text-xs text-muted-foreground hidden sm:block">
-                                            {new Date(file.createdAt).toLocaleDateString()}
-                                        </span>
-                                        {file.status === 'APPROVED' && (
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                className="h-8 w-8 text-muted-foreground"
-                                                onClick={(e) => { e.stopPropagation(); downloadClosureFile(file); }}
-                                                title="Download closure"
-                                            >
-                                                <Download className="w-4 h-4" />
+                                        <div className="col-span-2">
+                                            <StatusBadge file={file} />
+                                        </div>
+                                        <div className="col-span-2 flex flex-col items-start gap-1">
+                                            {file.priority && (
+                                                <Badge variant="outline" className={`text-[10px] h-5 px-2 rounded-full border shadow-none font-semibold ${priorityColors[file.priority] || "bg-slate-100/50 text-slate-700 border-slate-200/50"}`}>
+                                                    {`${file.priority}`}
+                                                </Badge>
+                                            )}
+                                            {file.currentStage && <span className="text-[10px] font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full border border-slate-200/50 whitespace-nowrap">Stage {file.currentStage.stageOrder}</span>}
+                                        </div>
+                                        <div className="col-span-1 flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            {file.status === 'APPROVED' && (
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    className="h-8 w-8 rounded-full hover:bg-green-50 hover:text-green-600 text-muted-foreground transition-colors"
+                                                    onClick={(e) => { e.stopPropagation(); downloadClosureFile(file); }}
+                                                    title="Download closure"
+                                                >
+                                                    <Download className="w-4 h-4" />
+                                                </Button>
+                                            )}
+                                            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-indigo-100 hover:text-indigo-600 transition-colors" onClick={(e) => { e.stopPropagation(); openFile(file); }}>
+                                                <ChevronRight className="w-4 h-4" />
                                             </Button>
-                                        )}
-                                        <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
+                                ))}
+                            </div>
                         </div>
                     )}
                 </CardContent>
@@ -792,7 +812,7 @@ const FileManagement = () => {
                                     <p className="text-xs text-muted-foreground uppercase font-semibold">Current Stage</p>
                                     {selected.currentStage ? (
                                         <div className="flex items-center gap-1.5 justify-end">
-                                            <Badge variant="secondary">Stage {selected.currentStage.stageOrder}</Badge>
+                                            <Badge variant="secondary">{`Stage ${selected.currentStage.stageOrder}`}</Badge>
                                             <span className="text-sm font-medium">{selected.currentStage.role}</span>
                                         </div>
                                     ) : (
@@ -809,11 +829,11 @@ const FileManagement = () => {
                                 <TabsTrigger value="overview" className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none h-full px-4">Overview</TabsTrigger>
                                 {!(selected as any)?.isMaster && (
                                     <>
-                                        <TabsTrigger value="documents" className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none h-full px-4">Documents <Badge variant="secondary" className="ml-2 text-[10px] h-5 px-1">{documents.length + inwardDocuments.length}</Badge></TabsTrigger>
+                                        <TabsTrigger value="documents" className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none h-full px-4">Documents <Badge variant="secondary" className="ml-2 text-[10px] h-5 px-1">{`${documents.length + inwardDocuments.length}`}</Badge></TabsTrigger>
                                         <TabsTrigger value="remarks" className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none h-full px-4">
                                             Remarks
                                             {movements.filter(m => m.remarks).length > 0 && (
-                                                <Badge variant="secondary" className="ml-2 text-[10px] h-5 px-1">{movements.filter(m => m.remarks).length}</Badge>
+                                                <Badge variant="secondary" className="ml-2 text-[10px] h-5 px-1">{`${movements.filter(m => m.remarks).length}`}</Badge>
                                             )}
                                         </TabsTrigger>
                                         <TabsTrigger value="history" className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none h-full px-4">History</TabsTrigger>
@@ -847,9 +867,9 @@ const FileManagement = () => {
                                         <div>
                                             {selected?.priority ? (
                                                 <Badge variant="outline" className={`text-[10px] h-5 ${priorityColors[selected.priority] || "bg-slate-100 text-slate-700"}`}>
-                                                    {selected.priority}
+                                                    {`${selected.priority}`}
                                                 </Badge>
-                                            ) : "Ã¢â‚¬â€"}
+                                            ) : "—"}
                                         </div>
                                     </div>
                                 </div>
@@ -1108,12 +1128,14 @@ const FileManagement = () => {
                                             )}
 
                                             {/* Render File Documents */}
-                                            {Object.entries(documents.reduce((acc, doc) => {
-                                                const h = doc.heading || "General Documents";
-                                                if (!acc[h]) acc[h] = [];
-                                                acc[h].push(doc);
-                                                return acc;
-                                            }, {} as Record<string, Document[]>)).map(([heading, docs]) => (
+                                            {Object.entries(
+                                                documents.reduce((acc: Record<string, Document[]>, doc) => {
+                                                    const h = doc.heading || "General Documents";
+                                                    if (!acc[h]) acc[h] = [];
+                                                    acc[h].push(doc);
+                                                    return acc;
+                                                }, {})
+                                            ).map(([heading, docs]) => (
                                                 <div key={heading} className="space-y-2">
                                                     <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{heading}</h4>
                                                     {docs.map((doc) => (

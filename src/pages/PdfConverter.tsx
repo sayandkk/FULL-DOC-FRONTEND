@@ -11,17 +11,20 @@ const CONVERT_API_URL = import.meta.env.VITE_API_URL ? "/convert" : "http://loca
 
 const PdfConverter = () => {
     return (
-        <div className="space-y-6">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <div>
-                    <h1 className="text-3xl font-bold font-sans tracking-tight">Document Converter</h1>
-                    <p className="text-muted-foreground mt-1">
-                        Convert your documents between PDF and Word formats seamlessly.
+        <div className="space-y-8 max-w-6xl mx-auto pb-12">
+            <div className="bg-slate-900 rounded-3xl p-8 sm:p-12 text-white shadow-xl relative overflow-hidden">
+                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
+                <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none"></div>
+
+                <div className="relative z-10 max-w-2xl">
+                    <h1 className="text-3xl sm:text-4xl font-bold tracking-tight mb-3">Document Converter</h1>
+                    <p className="text-slate-300 text-sm sm:text-base max-w-lg">
+                        Fast, secure, and seamless conversion between PDF, Word, and Image formats.
                     </p>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <ConverterCard
                     title="Word to PDF"
                     description="Convert .doc or .docx files to PDF."
@@ -66,7 +69,7 @@ const ConverterCard = ({ title, description, accept, endpoint, targetExtension, 
     const [isConverting, setIsConverting] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const handleDragOver = (e: React.DragEvent) => {
+    const handleDragOver = (e: any) => {
         e.preventDefault();
         setIsHovering(true);
     };
@@ -75,7 +78,7 @@ const ConverterCard = ({ title, description, accept, endpoint, targetExtension, 
         setIsHovering(false);
     };
 
-    const handleDrop = (e: React.DragEvent) => {
+    const handleDrop = (e: any) => {
         e.preventDefault();
         setIsHovering(false);
         if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
@@ -83,7 +86,7 @@ const ConverterCard = ({ title, description, accept, endpoint, targetExtension, 
         }
     };
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFileChange = (e: any) => {
         if (e.target.files && e.target.files.length > 0) {
             validateAndSetFile(e.target.files[0]);
         }
@@ -149,18 +152,24 @@ const ConverterCard = ({ title, description, accept, endpoint, targetExtension, 
     };
 
     return (
-        <Card className="shadow-elevated border-border/50">
-            <CardHeader>
-                <div className="flex items-center gap-2 mb-2">
-                    <FileType className="w-5 h-5 text-primary" />
-                    <CardTitle className="text-xl font-sans">{title}</CardTitle>
+        <Card className="border-0 shadow-sm bg-white/60 backdrop-blur-xl ring-1 ring-slate-200/50 overflow-hidden relative group transition-all hover:shadow-md hover:bg-white/80">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50/50 rounded-bl-[100px] -z-10 transition-transform group-hover:scale-110"></div>
+
+            <CardHeader className="pb-4">
+                <div className="flex items-center gap-3 mb-1">
+                    <div className="p-2 bg-indigo-50 rounded-lg text-indigo-600">
+                        <FileType className="w-5 h-5" />
+                    </div>
+                    <CardTitle className="text-xl font-bold text-slate-900">{title}</CardTitle>
                 </div>
-                <CardDescription>{description}</CardDescription>
+                <CardDescription className="text-slate-500 font-medium">{description}</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-6">
                 <div
-                    className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors cursor-pointer ${isHovering ? "border-primary bg-primary/5" : "border-border hover:bg-accent/50"
-                        } ${file ? "bg-accent/30" : ""}`}
+                    className={`relative border-2 border-dashed rounded-2xl p-8 sm:p-12 text-center transition-all cursor-pointer overflow-hidden ${isHovering
+                        ? "border-indigo-400 bg-indigo-50/50 shadow-inner"
+                        : "border-slate-200 hover:border-indigo-300 hover:bg-slate-50/50"
+                        } ${file ? "bg-indigo-50/30 border-indigo-200" : ""}`}
                     onDragOver={handleDragOver}
                     onDragLeave={handleDragLeave}
                     onDrop={handleDrop}
@@ -175,22 +184,26 @@ const ConverterCard = ({ title, description, accept, endpoint, targetExtension, 
                     />
 
                     {file ? (
-                        <div className="flex flex-col items-center gap-2">
-                            <CheckCircle className="w-10 h-10 text-green-500 mb-2" />
-                            <p className="font-medium text-sm text-foreground truncate max-w-full px-4">
+                        <div className="flex flex-col items-center gap-3 relative z-10 animate-in fade-in zoom-in duration-300">
+                            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center text-green-600 shadow-sm mb-2">
+                                <CheckCircle className="w-8 h-8" />
+                            </div>
+                            <p className="font-bold text-slate-800 text-lg truncate max-w-[200px] sm:max-w-xs">
                                 {file.name}
                             </p>
-                            <p className="text-xs text-muted-foreground">
+                            <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-white text-slate-500 shadow-sm border border-slate-100">
                                 {(file.size / 1024 / 1024).toFixed(2)} MB
-                            </p>
+                            </span>
                         </div>
                     ) : (
-                        <div className="flex flex-col items-center gap-2">
-                            <UploadCloud className="w-10 h-10 text-muted-foreground mb-2" />
-                            <p className="font-medium text-sm text-foreground">
-                                Click or drag & drop file here
+                        <div className="flex flex-col items-center gap-3 relative z-10">
+                            <div className={`w-16 h-16 rounded-full flex items-center justify-center mb-2 transition-colors ${isHovering ? 'bg-indigo-100 text-indigo-600' : 'bg-slate-100 text-slate-400'}`}>
+                                <UploadCloud className="w-8 h-8" />
+                            </div>
+                            <p className="font-bold text-slate-700 text-lg">
+                                {isHovering ? "Drop it here!" : "Click or drag file here"}
                             </p>
-                            <p className="text-xs text-muted-foreground">
+                            <p className="text-sm text-slate-500 font-medium">
                                 Supported formats: {type === "word-to-pdf" ? ".doc, .docx" : type === "image-to-pdf" ? ".jpg, .png" : ".pdf"}
                             </p>
                         </div>
@@ -198,16 +211,17 @@ const ConverterCard = ({ title, description, accept, endpoint, targetExtension, 
                 </div>
 
                 <Button
-                    className="w-full"
+                    className="w-full h-14 rounded-xl text-base font-bold transition-all"
                     size="lg"
                     disabled={!file || isConverting}
                     onClick={handleConvert}
+                    variant={file ? "default" : "secondary"}
                 >
                     {isConverting ? (
-                        <>
-                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                            Converting...
-                        </>
+                        <span className="flex items-center gap-2">
+                            <Loader2 className="w-5 h-5 animate-spin" />
+                            Converting Document...
+                        </span>
                     ) : (
                         `Convert to ${targetExtension.replace('.', '').toUpperCase()}`
                     )}

@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
-import { Inbox, Plus, Search, RefreshCw, Eye, Link2, AlertCircle, FileText, Upload, Download, Trash2, XCircle, AlertTriangle } from "lucide-react";
+import { Plus, Search, Filter, MoreVertical, FileText, ChevronDown, Download, Trash2, Edit, CheckCircle2, XCircle, AlertTriangle, RefreshCw, Upload, FileUp, Link2, Inbox, User, Calendar, Eye, AlertCircle } from "lucide-react";
 import { inwardApi, documentsApi } from "@/lib/api";
 import type { Inward, InwardType, Document } from "@/lib/types";
 
@@ -220,56 +220,81 @@ const InwardManagement = () => {
             </Card>
 
             {/* List */}
-            <Card className="shadow-card">
-                <CardHeader className="pb-3">
-                    <CardTitle className="text-lg font-sans flex items-center gap-2">
-                        <Inbox className="w-5 h-5 text-primary" /> Inward Entries
-                        <Badge variant="secondary" className="ml-2">{inwards.length}</Badge>
+            <Card className="shadow-card border-none bg-white/80 backdrop-blur-md overflow-hidden rounded-2xl">
+                <CardHeader className="pb-3 border-b border-black/5 bg-white/50">
+                    <CardTitle className="text-lg font-sans flex items-center justify-between">
+                        <div className="flex items-center gap-2 text-indigo-950">
+                            <Inbox className="w-5 h-5 text-indigo-600" />
+                            Inward Entries
+                        </div>
+                        <Badge variant="secondary" className="bg-indigo-100 text-indigo-700 hover:bg-indigo-100 rounded-full px-3 shadow-none">
+                            {`${inwards.length} records`}
+                        </Badge>
                     </CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-0">
                     {loading ? (
-                        <div className="flex items-center justify-center py-12 text-muted-foreground">
-                            <RefreshCw className="w-5 h-5 animate-spin mr-2" /> Loading...
+                        <div className="flex items-center justify-center py-16 text-muted-foreground">
+                            <RefreshCw className="w-5 h-5 animate-spin mr-3 text-indigo-500" /> Loading records...
                         </div>
                     ) : inwards.length === 0 ? (
-                        <div className="text-center py-12 text-muted-foreground">
-                            <Inbox className="w-10 h-10 mx-auto mb-3 opacity-30" />
-                            <p>No inward entries found</p>
-                            <Button variant="outline" size="sm" className="mt-3" onClick={() => setShowForm(true)}>
+                        <div className="text-center py-16 text-muted-foreground">
+                            <div className="w-16 h-16 bg-indigo-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <Inbox className="w-8 h-8 text-indigo-300" />
+                            </div>
+                            <p className="font-medium text-foreground/80">No inward entries found</p>
+                            <p className="text-sm mt-1">Start by registering your first correspondence.</p>
+                            <Button variant="default" className="mt-6 bg-indigo-600 hover:bg-indigo-700 rounded-full shadow-sm" onClick={() => setShowForm(true)}>
                                 Register First Entry
                             </Button>
                         </div>
                     ) : (
-                        <div className="space-y-2">
-                            {inwards.map((item) => (
-                                <div key={item.id}
-                                    className="flex items-center justify-between p-4 rounded-lg border border-border/50 hover:bg-muted/40 transition-colors cursor-pointer"
-                                    onClick={() => setSelected(item)}>
-                                    <div className="flex items-center gap-4 min-w-0">
-                                        <div className="w-10 h-10 rounded-md bg-primary/10 flex items-center justify-center shrink-0">
-                                            <Inbox className="w-5 h-5 text-primary" />
+                        <div className="w-full text-sm">
+                            {/* Smart Table Header */}
+                            <div className="grid grid-cols-12 gap-4 p-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider bg-black/[0.02] border-b border-black/5">
+                                <div className="col-span-1 text-center">Date</div>
+                                <div className="col-span-2">Number</div>
+                                <div className="col-span-4">Subject</div>
+                                <div className="col-span-2">Sender</div>
+                                <div className="col-span-2">Type</div>
+                                <div className="col-span-1 text-right">Actions</div>
+                            </div>
+                            {/* Smart Table Body (Zebra striped) */}
+                            <div className="divide-y divide-black/5">
+                                {inwards.map((item, index) => (
+                                    <div key={item.id}
+                                        className={`grid grid-cols-12 gap-4 p-4 items-center group cursor-pointer transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-black/[0.01]'} hover:bg-indigo-50/50`}
+                                        onClick={() => setSelected(item)}>
+                                        <div className="col-span-1 text-center text-xs text-muted-foreground whitespace-nowrap">
+                                            {new Date(item.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                                         </div>
-                                        <div className="min-w-0">
-                                            <p className="font-medium text-sm truncate">{item.subject}</p>
-                                            <p className="text-xs text-muted-foreground">
-                                                {item.inwardNumber} · {item.senderName || "—"} · {typeLabels[item.inwardType]}
-                                            </p>
+                                        <div className="col-span-2 font-medium text-foreground/80 truncate">
+                                            {item.inwardNumber}
                                         </div>
-                                    </div>
-                                    <div className="flex items-center gap-3 shrink-0">
-                                        {item.files && item.files.length > 0 && (
-                                            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 flex items-center gap-1">
-                                                <Link2 className="w-3 h-3" /> In Process
+                                        <div className="col-span-4 min-w-0">
+                                            <p className="font-semibold text-foreground/90 truncate group-hover:text-indigo-700 transition-colors">{item.subject}</p>
+                                            {item.files && item.files.length > 0 && (
+                                                <span className="inline-flex items-center gap-1 mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-100/80 text-blue-700 border border-blue-200">
+                                                    <Link2 className="w-3 h-3" /> Linked to File
+                                                </span>
+                                            )}
+                                        </div>
+                                        <div className="col-span-2 text-muted-foreground truncate text-[13px]">
+                                            {item.senderName || "—"}
+                                        </div>
+                                        <div className="col-span-2">
+                                            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold tracking-wide bg-slate-100 text-slate-700 border border-slate-200/60 uppercase">
+                                                {typeLabels[item.inwardType]}
                                             </span>
-                                        )}
-                                        <span className="text-xs text-muted-foreground hidden sm:block">
-                                            {new Date(item.createdAt).toLocaleDateString()}
-                                        </span>
-                                        <Eye className="w-4 h-4 text-muted-foreground" />
+                                        </div>
+                                        <div className="col-span-1 flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-indigo-100 hover:text-indigo-600" onClick={(e) => { e.stopPropagation(); setSelected(item); }}>
+                                                <Eye className="w-4 h-4" />
+                                            </Button>
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
+                                ))}
+                            </div>
                         </div>
                     )}
                 </CardContent>
@@ -277,11 +302,12 @@ const InwardManagement = () => {
 
             {/* New Inward Dialog */}
             <Dialog open={showForm} onOpenChange={setShowForm}>
-                <DialogContent className="max-w-lg">
-                    <DialogHeader>
-                        <DialogTitle>Register New Inward Entry</DialogTitle>
-                    </DialogHeader>
-                    <form onSubmit={handleCreate} className="space-y-4">
+                <DialogContent className="max-w-xl rounded-2xl p-0 overflow-hidden border-none shadow-2xl supports-[backdrop-filter]:bg-background/80 backdrop-blur-xl">
+                    <div className="px-6 py-5 bg-gradient-to-r from-indigo-50/50 to-transparent border-b border-indigo-100/50">
+                        <DialogTitle className="text-xl font-sans text-indigo-950">Register New Inward Entry</DialogTitle>
+                        <p className="text-sm text-muted-foreground mt-1">Fill in the details for the new correspondence.</p>
+                    </div>
+                    <form onSubmit={handleCreate} className="px-6 py-5 space-y-5">
                         {error && (
                             <div className="flex items-center gap-2 text-sm text-destructive bg-destructive/10 rounded-md px-3 py-2">
                                 <AlertCircle className="w-4 h-4" /> {error}
@@ -313,193 +339,244 @@ const InwardManagement = () => {
                             <Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })}
                                 placeholder="Additional details..." rows={3} />
                         </div>
-                        <DialogFooter>
-                            <Button variant="outline" type="button" onClick={() => setShowForm(false)}>Cancel</Button>
-                            <Button type="submit" disabled={submitting}>{submitting ? "Saving..." : "Register"}</Button>
-                        </DialogFooter>
+                        <div className="px-6 py-4 bg-black/[0.02] border-t border-black/5 flex items-center justify-end gap-3 mt-2">
+                            <Button variant="ghost" type="button" className="hover:bg-black/5 rounded-full" onClick={() => setShowForm(false)}>Cancel</Button>
+                            <Button type="submit" disabled={submitting} className="rounded-full shadow-sm bg-indigo-600 hover:bg-indigo-700">
+                                {submitting ? <RefreshCw className="w-4 h-4 animate-spin mr-2" /> : <Plus className="w-4 h-4 mr-2" />}
+                                {submitting ? "Saving..." : "Register Entry"}
+                            </Button>
+                        </div>
                     </form>
                 </DialogContent>
             </Dialog>
 
             {/* Detail Dialog */}
             <Dialog open={!!selected} onOpenChange={() => setSelected(null)}>
-                <DialogContent className="max-w-lg max-h-[90vh] flex flex-col overflow-hidden">
-                    <DialogHeader>
-                        <DialogTitle>{selected?.inwardNumber} — Detail</DialogTitle>
-                    </DialogHeader>
+                <DialogContent className="max-w-3xl max-h-[90vh] flex flex-col overflow-hidden rounded-2xl p-0 border-none shadow-2xl supports-[backdrop-filter]:bg-background/80 backdrop-blur-xl">
+                    <div className="px-6 py-5 bg-gradient-to-r from-indigo-50/50 to-transparent border-b border-indigo-100/50 shrink-0">
+                        <div className="flex items-center justify-between">
+                            <DialogTitle className="text-xl font-sans text-indigo-950 flex items-center gap-3">
+                                <FileText className="w-5 h-5 text-indigo-500" />
+                                {selected?.inwardNumber}
+                            </DialogTitle>
+                            <Badge variant="outline" className="bg-white border-indigo-200 text-indigo-700 rounded-full font-semibold px-3 py-1 text-xs">
+                                {selected ? `${typeLabels[selected.inwardType]}` : ""}
+                            </Badge>
+                        </div>
+                    </div>
                     {selected && (
-                        <div className="space-y-3 text-sm overflow-y-auto flex-1 pr-1">
-                            <div className="grid grid-cols-2 gap-3">
-                                <div><p className="text-muted-foreground text-xs">Subject</p><p className="font-medium">{selected.subject}</p></div>
-                                <div><p className="text-muted-foreground text-xs">Type</p><p className="font-medium">{typeLabels[selected.inwardType]}</p></div>
-                                <div><p className="text-muted-foreground text-xs">Source</p><p className="font-medium">{selected.senderName || "—"}</p></div>
-                                <div><p className="text-muted-foreground text-xs">Received</p><p className="font-medium">{new Date(selected.createdAt).toLocaleDateString()}</p></div>
-                                {/* <div><p className="text-muted-foreground text-xs">Linked File</p>
-                                    <p className="font-medium">{selected.fileId ? <span className="text-success flex items-center gap-1"><Link2 className="w-3 h-3" /> Linked</span> : "Not linked"}</p>
-                                </div> */}
-                            </div>
-                            {selected.description && (
-                                <div><p className="text-muted-foreground text-xs">Description</p><p>{selected.description}</p></div>
-                            )}
-
-                            {/* Linked File Info */}
-                            {selected.files && selected.files.length > 0 && (
-                                <div className="rounded-md border border-blue-200 overflow-hidden">
-                                    <div className="flex items-center gap-2 bg-blue-100 px-3 py-1.5">
-                                        <Link2 className="w-3.5 h-3.5 text-blue-700" />
-                                        <p className="text-xs font-semibold text-blue-700 uppercase tracking-wide">
-                                            Linked to File{selected.files.length > 1 ? 's' : ''}
-                                        </p>
+                        <div className="flex-1 overflow-y-auto p-6">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                {/* Left Column: Main Content */}
+                                <div className="md:col-span-2 space-y-6">
+                                    {/* Subject block */}
+                                    <div>
+                                        <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-widest mb-1.5">Subject</h3>
+                                        <p className="text-xl font-bold text-slate-900 leading-snug">{selected.subject}</p>
                                     </div>
-                                    <div className="divide-y divide-blue-100">
-                                        {selected.files.map(f => (
-                                            <div key={f.id} className="flex items-center justify-between px-3 py-2 bg-blue-50">
-                                                <div className="min-w-0">
-                                                    <p className="text-sm font-bold text-blue-900">{f.fileNumber}</p>
-                                                    <p className="text-xs text-blue-700 truncate">{f.subject}</p>
-                                                </div>
-                                                <span className={`ml-3 shrink-0 text-[10px] font-semibold px-2 py-0.5 rounded-full ${f.status === 'APPROVED' ? 'bg-green-100 text-green-700' :
-                                                    f.status === 'REJECTED' ? 'bg-red-100 text-red-700' :
-                                                        f.status === 'CLOSED' ? 'bg-slate-100 text-slate-600' :
-                                                            'bg-blue-200 text-blue-800'
-                                                    }`}>{f.status}</span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
 
-                            <div className="pt-4 border-t">
-                                <div className="flex flex-col gap-3 mb-3">
-                                    <h3 className="font-medium flex items-center gap-2">
-                                        <FileText className="w-4 h-4" /> Attached Documents
-                                    </h3>
-
-                                    <div className="flex gap-2">
-                                        {Array.from(new Set(documents.map(d => d.heading).filter(Boolean))).length > 0 && !isNewHeading ? (
-                                            <Select
-                                                value={uploadHeading}
-                                                onValueChange={(val) => {
-                                                    if (val === "NEW_HEADING_OPTION") {
-                                                        setIsNewHeading(true);
-                                                        setUploadHeading("");
-                                                    } else {
-                                                        setUploadHeading(val);
-                                                    }
-                                                }}
-                                            >
-                                                <SelectTrigger className="h-8 text-sm w-[200px]">
-                                                    <SelectValue placeholder="Select heading..." />
-                                                </SelectTrigger>
-                                                <SelectContent position="popper">
-                                                    {Array.from(new Set(documents.map(d => d.heading).filter(Boolean))).map((h) => (
-                                                        <SelectItem key={h as string} value={h as string}>{h as string}</SelectItem>
-                                                    ))}
-                                                    <SelectItem value="NEW_HEADING_OPTION" className="text-muted-foreground font-medium">
-                                                        + Create New Heading
-                                                    </SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                        ) : (
-                                            <div className="flex gap-1 items-center">
-                                                <Input
-                                                    placeholder="Heading..."
-                                                    value={uploadHeading}
-                                                    onChange={(e) => setUploadHeading(e.target.value)}
-                                                    className="h-8 text-sm w-[200px]"
-                                                    autoFocus={isNewHeading}
-                                                />
-                                                {Array.from(new Set(documents.map(d => d.heading).filter(Boolean))).length > 0 && (
-                                                    <Button
-                                                        size="icon"
-                                                        variant="ghost"
-                                                        className="h-8 w-8"
-                                                        onClick={() => setIsNewHeading(false)}
-                                                        title="Select existing heading"
-                                                    >
-                                                        <XCircle className="w-4 h-4" />
-                                                    </Button>
-                                                )}
+                                    {/* Description block */}
+                                    {selected.description && (
+                                        <div>
+                                            <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-widest mb-1.5">Description</h3>
+                                            <div className="bg-slate-50 border border-slate-100 p-4 rounded-xl text-slate-700 leading-relaxed text-sm">
+                                                {selected.description}
                                             </div>
-                                        )}
-                                        <div className="relative shrink-0">
-                                            <input
-                                                type="file"
-                                                id="doc-upload"
-                                                className="hidden"
-                                                onChange={handleUpload}
-                                                disabled={uploading}
-                                            />
-                                            <Button size="sm" variant="outline" className="h-8 gap-2" disabled={uploading}
-                                                onClick={() => document.getElementById("doc-upload")?.click()}>
-                                                {uploading ? (
-                                                    <RefreshCw className="w-3 h-3 animate-spin" />
-                                                ) : (
-                                                    <Upload className="w-3 h-3" />
-                                                )}
-                                                Upload Version
-                                            </Button>
                                         </div>
-                                    </div>
-                                </div>
+                                    )}
 
-                                {docsLoading ? (
-                                    <div className="text-center py-4 text-muted-foreground text-sm">Loading documents...</div>
-                                ) : documents.length === 0 ? (
-                                    <div className="text-center py-6 border rounded-md border-dashed text-muted-foreground text-sm">
-                                        No documents attached yet
-                                    </div>
-                                ) : (
-                                    <div className="space-y-4 max-h-[300px] overflow-y-auto pr-1">
-                                        {Object.entries(documents.reduce((acc, doc) => {
-                                            const h = doc.heading || "General Documents";
-                                            if (!acc[h]) acc[h] = [];
-                                            acc[h].push(doc);
-                                            return acc;
-                                        }, {} as Record<string, Document[]>)).map(([heading, docs]) => (
-                                            <div key={heading} className="space-y-2">
-                                                <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{heading}</h4>
-                                                {docs.map((doc) => (
-                                                    <div key={doc.id} className="flex items-center justify-between p-2 rounded border bg-card/50 text-sm">
-                                                        <div className="flex items-center gap-3 overflow-hidden">
-                                                            <div className="w-8 h-8 rounded bg-primary/10 flex items-center justify-center shrink-0 text-primary font-bold text-xs">
-                                                                v{doc.version}
-                                                            </div>
-                                                            <div className="min-w-0">
-                                                                <p className="font-medium truncate">{doc.originalName}</p>
-                                                                <p className="text-xs text-muted-foreground">
-                                                                    {(doc.size / 1024).toFixed(1)} KB · {new Date(doc.createdAt).toLocaleDateString()}
-                                                                </p>
-                                                            </div>
+                                    {/* Linked File Info */}
+                                    {selected.files && selected.files.length > 0 && (
+                                        <div>
+                                            <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-widest mb-2 flex items-center gap-1.5">
+                                                <Link2 className="w-4 h-4" /> Linked Files
+                                            </h3>
+                                            <div className="grid gap-2">
+                                                {selected.files.map(f => (
+                                                    <div key={f.id} className="flex items-center justify-between p-3 bg-indigo-50/50 border border-indigo-100/50 rounded-xl hover:bg-indigo-50 transition-colors">
+                                                        <div className="min-w-0">
+                                                            <p className="text-sm font-bold text-indigo-900 flex items-center gap-1.5">
+                                                                <FileText className="w-3.5 h-3.5 text-indigo-500" />
+                                                                {f.fileNumber}
+                                                            </p>
+                                                            <p className="text-xs text-indigo-700/70 truncate mt-0.5">{f.subject}</p>
                                                         </div>
-                                                        <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => handleDownload(doc)} title="Download">
-                                                            <Download className="w-4 h-4 text-muted-foreground" />
-                                                        </Button>
-                                                        {/* Only allow delete if the inward hasn't been linked to any file yet */}
-                                                        {(!selected.files || selected.files.length === 0) && (
-                                                            <Button
-                                                                size="icon"
-                                                                variant="ghost"
-                                                                className="h-7 w-7 text-muted-foreground hover:text-destructive"
-                                                                title="Delete attachment"
-                                                                onClick={() => {
-                                                                    setDocToDelete({ id: doc.id, name: doc.originalName });
-                                                                    setShowDeleteDocConfirm(true);
-                                                                }}
-                                                            >
-                                                                <Trash2 className="w-4 h-4" />
-                                                            </Button>
-                                                        )}
+                                                        <span className={`ml-3 shrink-0 text-[10px] font-bold px-2.5 py-1 rounded-full ${f.status === 'APPROVED' ? 'bg-green-100 text-green-700' :
+                                                            f.status === 'REJECTED' ? 'bg-red-100 text-red-700' :
+                                                                f.status === 'CLOSED' ? 'bg-slate-200 text-slate-700' :
+                                                                    'bg-indigo-100 text-indigo-700'
+                                                            }`}>{f.status}</span>
                                                     </div>
                                                 ))}
                                             </div>
-                                        ))}
+                                        </div>
+                                    )}
+
+                                    {/* Documents Section */}
+                                    <div className="pt-2">
+                                        <div className="flex flex-col gap-4 mb-4">
+                                            <div className="flex items-center justify-between">
+                                                <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-widest flex items-center gap-1.5">
+                                                    <FileText className="w-4 h-4" /> Attached Documents
+                                                </h3>
+                                            </div>
+
+                                            <div className="flex gap-2">
+                                                {Array.from(new Set(documents.map(d => d.heading).filter(Boolean))).length > 0 && !isNewHeading ? (
+                                                    <Select
+                                                        value={uploadHeading}
+                                                        onValueChange={(val) => {
+                                                            if (val === "NEW_HEADING_OPTION") {
+                                                                setIsNewHeading(true);
+                                                                setUploadHeading("");
+                                                            } else {
+                                                                setUploadHeading(val);
+                                                            }
+                                                        }}
+                                                    >
+                                                        <SelectTrigger className="h-8 text-sm w-[200px]">
+                                                            <SelectValue placeholder="Select heading..." />
+                                                        </SelectTrigger>
+                                                        <SelectContent position="popper">
+                                                            {Array.from(new Set(documents.map(d => d.heading).filter(Boolean))).map((h) => (
+                                                                <SelectItem key={h as string} value={h as string}>{h as string}</SelectItem>
+                                                            ))}
+                                                            <SelectItem value="NEW_HEADING_OPTION" className="text-muted-foreground font-medium">
+                                                                + Create New Heading
+                                                            </SelectItem>
+                                                        </SelectContent>
+                                                    </Select>
+                                                ) : (
+                                                    <div className="flex gap-1 items-center">
+                                                        <Input
+                                                            placeholder="Heading..."
+                                                            value={uploadHeading}
+                                                            onChange={(e) => setUploadHeading(e.target.value)}
+                                                            className="h-8 text-sm w-[200px]"
+                                                            autoFocus={isNewHeading}
+                                                        />
+                                                        {Array.from(new Set(documents.map(d => d.heading).filter(Boolean))).length > 0 && (
+                                                            <Button
+                                                                size="icon"
+                                                                variant="ghost"
+                                                                className="h-8 w-8"
+                                                                onClick={() => setIsNewHeading(false)}
+                                                                title="Select existing heading"
+                                                            >
+                                                                <XCircle className="w-4 h-4" />
+                                                            </Button>
+                                                        )}
+                                                    </div>
+                                                )}
+                                                <div className="relative shrink-0">
+                                                    <input
+                                                        type="file"
+                                                        id="doc-upload"
+                                                        className="hidden"
+                                                        onChange={handleUpload}
+                                                        disabled={uploading}
+                                                    />
+                                                    <Button size="sm" variant="outline" className="h-8 gap-2" disabled={uploading}
+                                                        onClick={() => document.getElementById("doc-upload")?.click()}>
+                                                        {uploading ? (
+                                                            <RefreshCw className="w-3 h-3 animate-spin" />
+                                                        ) : (
+                                                            <Upload className="w-3 h-3" />
+                                                        )}
+                                                        Upload Version
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {docsLoading ? (
+                                            <div className="text-center py-4 text-muted-foreground text-sm">Loading documents...</div>
+                                        ) : documents.length === 0 ? (
+                                            <div className="text-center py-6 border rounded-md border-dashed text-muted-foreground text-sm">
+                                                No documents attached yet
+                                            </div>
+                                        ) : (
+                                            <div className="space-y-4 max-h-[300px] overflow-y-auto pr-1">
+                                                {Object.entries(documents.reduce((acc: Record<string, Document[]>, doc) => {
+                                                    const h = doc.heading || "General Documents";
+                                                    if (!acc[h]) acc[h] = [];
+                                                    acc[h].push(doc);
+                                                    return acc;
+                                                }, {})).map(([heading, docs]) => (
+                                                    <div key={heading} className="space-y-2">
+                                                        <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{heading}</h4>
+                                                        {docs.map((doc) => (
+                                                            <div key={doc.id} className="flex items-center justify-between p-2 rounded border bg-card/50 text-sm">
+                                                                <div className="flex items-center gap-3 overflow-hidden">
+                                                                    <div className="w-8 h-8 rounded bg-primary/10 flex items-center justify-center shrink-0 text-primary font-bold text-xs">
+                                                                        v{doc.version}
+                                                                    </div>
+                                                                    <div className="min-w-0">
+                                                                        <p className="font-medium truncate">{doc.originalName}</p>
+                                                                        <p className="text-xs text-muted-foreground">
+                                                                            {(doc.size / 1024).toFixed(1)} KB · {new Date(doc.createdAt).toLocaleDateString()}
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                                <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => handleDownload(doc)} title="Download">
+                                                                    <Download className="w-4 h-4 text-muted-foreground" />
+                                                                </Button>
+                                                                {/* Only allow delete if the inward hasn't been linked to any file yet */}
+                                                                {(!selected.files || selected.files.length === 0) && (
+                                                                    <Button
+                                                                        size="icon"
+                                                                        variant="ghost"
+                                                                        className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                                                                        title="Delete attachment"
+                                                                        onClick={() => {
+                                                                            setDocToDelete({ id: doc.id, name: doc.originalName });
+                                                                            setShowDeleteDocConfirm(true);
+                                                                        }}
+                                                                    >
+                                                                        <Trash2 className="w-4 h-4" />
+                                                                    </Button>
+                                                                )}
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
                                     </div>
-                                )}
+                                </div>
+
+                                {/* Right Column: Metadata Sidebar */}
+                                <div className="md:col-span-1 space-y-4">
+                                    <div className="bg-slate-50 border border-slate-100 rounded-xl p-5 space-y-5">
+                                        <div>
+                                            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Document Type</p>
+                                            <div className="flex items-center gap-2">
+                                                <Inbox className="w-4 h-4 text-indigo-500" />
+                                                <p className="font-semibold text-slate-800 text-sm">{typeLabels[selected.inwardType]}</p>
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Source / Sender</p>
+                                            <div className="flex items-center gap-2">
+                                                <User className="w-4 h-4 text-indigo-500" />
+                                                <p className="font-semibold text-slate-800 text-sm">{selected.senderName || "—"}</p>
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Received Date</p>
+                                            <div className="flex items-center gap-2">
+                                                <Calendar className="w-4 h-4 text-indigo-500" />
+                                                <p className="font-semibold text-slate-800 text-sm">{new Date(selected.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     )}
-                    <DialogFooter className="flex-row justify-between sm:justify-between gap-2">
+                    <DialogFooter className="px-6 py-4 bg-slate-50/50 border-t border-slate-100 flex-row justify-between sm:justify-between items-center gap-2">
                         <Button
                             variant="destructive"
                             size="sm"
