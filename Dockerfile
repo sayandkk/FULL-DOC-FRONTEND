@@ -20,9 +20,10 @@ FROM nginx:stable-alpine AS production
 # Copy built assets
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Custom nginx config
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Custom nginx config template
+COPY nginx.conf /etc/nginx/templates/default.conf.template
 
 EXPOSE 80
 
-CMD ["nginx", "-g", "daemon off;"]
+# Use envsubst to replace environment variables in nginx config on startup
+CMD ["sh", "-c", "envsubst '${FRONTEND_DOMAIN}' < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"]
