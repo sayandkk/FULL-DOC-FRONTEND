@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { UploadCloud, FileType, CheckCircle, AlertCircle, Loader2, Layers, Scissors, X, Plus } from "lucide-react";
+import { UploadCloud, FileType, CheckCircle, AlertCircle, Loader2, Layers, Scissors, X, Plus, Minimize2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Toaster, toast } from "sonner";
@@ -8,6 +8,7 @@ import axios from "axios";
 // Using the vite proxy or absolute URL depending on env
 // nginx.conf proxies /convert/ to the python service
 const CONVERT_API_URL = import.meta.env.VITE_API_URL ? "/convert" : "http://localhost:8000";
+const MAIN_API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001/api/v1";
 
 const PdfConverter = () => {
     return (
@@ -45,7 +46,7 @@ const PdfConverter = () => {
                     title="Image to PDF"
                     description="Convert JPG, PNG, or JPEG images to PDF."
                     accept="image/jpeg,image/png,image/jpg"
-                    endpoint={`${CONVERT_API_URL}/convert-image-to-pdf-file`}
+                    endpoint={`${CONVERT_API_URL}/convert-image-to-pdf`}
                     targetExtension=".pdf"
                     type="image-to-pdf"
                 />
@@ -67,6 +68,14 @@ const PdfConverter = () => {
                     type="split-pdf"
                     showRangeInput
                 />
+                <ConverterCard
+                    title="Compress PDF"
+                    description="Reduce the file size of your PDF."
+                    accept=".pdf,application/pdf"
+                    endpoint={`${MAIN_API_URL}/pdf/compress`}
+                    targetExtension=".pdf"
+                    type="compress-pdf"
+                />
             </div>
         </div>
     );
@@ -78,7 +87,7 @@ interface ConverterCardProps {
     accept: string;
     endpoint: string;
     targetExtension: string;
-    type: "word-to-pdf" | "pdf-to-word" | "image-to-pdf" | "merge-pdf" | "split-pdf";
+    type: "word-to-pdf" | "pdf-to-word" | "image-to-pdf" | "merge-pdf" | "split-pdf" | "compress-pdf";
     multiple?: boolean;
     showRangeInput?: boolean;
 }
@@ -88,6 +97,7 @@ const ConverterCard = ({ title, description, accept, endpoint, targetExtension, 
     const [isHovering, setIsHovering] = useState(false);
     const [isConverting, setIsConverting] = useState(false);
     const [pageRange, setPageRange] = useState("1-end");
+    const [quality, setQuality] = useState(60);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleDragOver = (e: any) => {
@@ -156,14 +166,15 @@ const ConverterCard = ({ title, description, accept, endpoint, targetExtension, 
             if (showRangeInput) {
                 formData.append("pages", pageRange);
             }
+            if (type === "compress-pdf") {
+                formData.append("quality", quality.toString());
+            }
         }
 
         try {
             const response = await axios.post(endpoint, formData, {
                 responseType: "blob",
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
+                headers: { "Content-Type": "multipart/form-data" }
             });
 
             // Create download link
@@ -203,7 +214,7 @@ const ConverterCard = ({ title, description, accept, endpoint, targetExtension, 
             <CardHeader className="pb-4">
                 <div className="flex items-center gap-3 mb-1">
                     <div className="p-2 bg-indigo-50 dark:bg-indigo-950/50 rounded-lg text-indigo-600 dark:text-indigo-400">
-                        {type === "merge-pdf" ? <Layers className="w-5 h-5" /> : type === "split-pdf" ? <Scissors className="w-5 h-5" /> : <FileType className="w-5 h-5" />}
+                        {type === "merge-pdf" ? <Layers className="w-5 h-5" /> : type === "split-pdf" ? <Scissors className="w-5 h-5" /> : type === "compress-pdf" ? <Minimize2 className="w-5 h-5" /> : <FileType className="w-5 h-5" />}
                     </div>
                     <CardTitle className="text-xl font-bold text-slate-900 dark:text-slate-100">{title}</CardTitle>
                 </div>
@@ -276,7 +287,9 @@ const ConverterCard = ({ title, description, accept, endpoint, targetExtension, 
                                 {isHovering ? "Drop it here!" : "Click or drag file here"}
                             </p>
                             <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">
-                                Supported formats: {type === "word-to-pdf" ? ".doc, .docx" : type === "image-to-pdf" ? ".jpg, .png" : ".pdf"}
+                                Supported formats: {
+                                    type === "word-to-pdf" ? ".doc, .docx" : type === "image-to-pdf" ? ".jpg, .png" : ".pdf"
+                                }
                             </p>
                         </div>
                     )}
@@ -295,6 +308,27 @@ const ConverterCard = ({ title, description, accept, endpoint, targetExtension, 
                     </div>
                 )}
 
+                {type === "compress-pdf" && files.length > 0 && (
+                    <div className="space-y-4 animate-in slide-in-from-top-2 duration-300">
+                        <div className="flex items-center justify-between ml-1">
+                            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Compression Quality</label>
+                            <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400">{quality}%</span>
+                        </div>
+                        <input
+                            type="range"
+                            min="1"
+                            max="100"
+                            value={quality}
+                            onChange={(e) => setQuality(parseInt(e.target.value))}
+                            className="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                        />
+                        <div className="flex justify-between text-[10px] text-slate-400 font-bold px-1">
+                            <span>Small Size</span>
+                            <span>Best Quality</span>
+                        </div>
+                    </div>
+                )}
+
                 <Button
                     className="w-full h-14 rounded-xl text-base font-bold transition-all shadow-lg shadow-indigo-500/10"
                     size="lg"
@@ -308,9 +342,10 @@ const ConverterCard = ({ title, description, accept, endpoint, targetExtension, 
                             Processing...
                         </span>
                     ) : (
-                        type === "merge-pdf" ? `Merge ${files.length} PDFs` : type === "split-pdf" ? "Split PDF" : `Convert to ${targetExtension.replace('.', '').toUpperCase()}`
+                        type === "merge-pdf" ? `Merge ${files.length} PDFs` : type === "split-pdf" ? "Split PDF" : type === "compress-pdf" ? "Compress PDF" : `Convert to ${targetExtension.replace('.', '').toUpperCase()}`
                     )}
                 </Button>
+
             </CardContent>
         </Card>
     );
