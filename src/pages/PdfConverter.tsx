@@ -76,6 +76,22 @@ const PdfConverter = () => {
                     targetExtension=".pdf"
                     type="compress-pdf"
                 />
+                <ConverterCard
+                    title="PDF to Text"
+                    description="Extract raw text from a PDF document."
+                    accept=".pdf,application/pdf"
+                    endpoint={`${CONVERT_API_URL}/extract-text-pdf`}
+                    targetExtension=".txt"
+                    type="pdf-to-text"
+                />
+                <ConverterCard
+                    title="Image to Text"
+                    description="Extract raw text from an image (OCR)."
+                    accept="image/jpeg,image/png,image/jpg"
+                    endpoint={`${CONVERT_API_URL}/extract-text-image`}
+                    targetExtension=".txt"
+                    type="image-to-text"
+                />
             </div>
         </div>
     );
@@ -87,7 +103,7 @@ interface ConverterCardProps {
     accept: string;
     endpoint: string;
     targetExtension: string;
-    type: "word-to-pdf" | "pdf-to-word" | "image-to-pdf" | "merge-pdf" | "split-pdf" | "compress-pdf";
+    type: "word-to-pdf" | "pdf-to-word" | "image-to-pdf" | "merge-pdf" | "split-pdf" | "compress-pdf" | "pdf-to-text" | "image-to-text";
     multiple?: boolean;
     showRangeInput?: boolean;
 }
@@ -134,7 +150,7 @@ const ConverterCard = ({ title, description, accept, endpoint, targetExtension, 
 
     const validateFile = (selectedFile: File) => {
         // Basic validation
-        if ((type === "pdf-to-word" || type === "split-pdf" || type === "merge-pdf") && !selectedFile.name.toLowerCase().endsWith(".pdf")) {
+        if ((type === "pdf-to-word" || type === "split-pdf" || type === "merge-pdf" || type === "pdf-to-text") && !selectedFile.name.toLowerCase().endsWith(".pdf")) {
             toast.error(`${selectedFile.name} is not a valid PDF file`);
             return false;
         }
@@ -142,7 +158,7 @@ const ConverterCard = ({ title, description, accept, endpoint, targetExtension, 
             toast.error("Please select a valid Word file (.doc or .docx)");
             return false;
         }
-        if (type === "image-to-pdf" && !selectedFile.name.toLowerCase().match(/\.(jpg|jpeg|png)$/)) {
+        if ((type === "image-to-pdf" || type === "image-to-text") && !selectedFile.name.toLowerCase().match(/\.(jpg|jpeg|png)$/)) {
             toast.error("Please select a valid Image file (.jpg, .jpeg, .png)");
             return false;
         }
@@ -288,7 +304,7 @@ const ConverterCard = ({ title, description, accept, endpoint, targetExtension, 
                             </p>
                             <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">
                                 Supported formats: {
-                                    type === "word-to-pdf" ? ".doc, .docx" : type === "image-to-pdf" ? ".jpg, .png" : ".pdf"
+                                    type === "word-to-pdf" ? ".doc, .docx" : (type === "image-to-pdf" || type === "image-to-text") ? ".jpg, .png" : ".pdf"
                                 }
                             </p>
                         </div>
@@ -342,7 +358,7 @@ const ConverterCard = ({ title, description, accept, endpoint, targetExtension, 
                             Processing...
                         </span>
                     ) : (
-                        type === "merge-pdf" ? `Merge ${files.length} PDFs` : type === "split-pdf" ? "Split PDF" : type === "compress-pdf" ? "Compress PDF" : `Convert to ${targetExtension.replace('.', '').toUpperCase()}`
+                        type === "merge-pdf" ? `Merge ${files.length} PDFs` : type === "split-pdf" ? "Split PDF" : type === "compress-pdf" ? "Compress PDF" : type === "pdf-to-text" || type === "image-to-text" ? "Extract Text" : `Convert to ${targetExtension.replace('.', '').toUpperCase()}`
                     )}
                 </Button>
 
