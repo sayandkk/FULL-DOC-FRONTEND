@@ -1,6 +1,7 @@
 import { Outlet } from "react-router-dom";
 import AppSidebar from "./AppSidebar";
 import DashboardHeader from "./DashboardHeader";
+import FloatingDocChat from "../FloatingDocChat";
 
 const DashboardLayout = () => {
   return (
@@ -12,6 +13,7 @@ const DashboardLayout = () => {
           <Outlet />
         </main>
       </div>
+      <FloatingDocChat />
     </div>
   );
 };
