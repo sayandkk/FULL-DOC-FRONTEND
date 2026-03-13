@@ -3,9 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileText, Shield, Lock, AlertCircle, Loader2 } from "lucide-react";
+import { FileText, Shield, Lock, AlertCircle, Loader2, ArrowRight, CheckCircle2 } from "lucide-react";
 import { authApi } from "@/lib/api";
+import { motion, AnimatePresence, Variants } from "framer-motion";
+import BrandImage from "@/assets/login-brand.png";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -21,123 +22,158 @@ const Login = () => {
 
     try {
       const { data } = await authApi.login(email, password);
-
-      // Persist tokens and user info
       localStorage.setItem("access_token", data.accessToken);
       localStorage.setItem("refresh_token", data.refreshToken);
       localStorage.setItem("session_id", data.sessionId);
       localStorage.setItem("dms_user", JSON.stringify(data.user));
-
       navigate("/dashboard");
     } catch (err: any) {
-      const message =
-        err?.response?.data?.message ||
-        "Login failed. Please check your credentials.";
+      const message = err?.response?.data?.message || "Login failed. Please check your credentials.";
       setError(Array.isArray(message) ? message.join(", ") : message);
     } finally {
       setLoading(false);
     }
   };
 
+  const containerVariants: Variants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { 
+        duration: 0.6, 
+        staggerChildren: 0.1, 
+        delayChildren: 0.2,
+        ease: "easeOut" 
+      }
+    }
+  };
+
+  const itemVariants: Variants = {
+    hidden: { opacity: 0, y: 15 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } }
+  };
+
   return (
-    <div className="min-h-screen relative flex items-center justify-center bg-muted/30 overflow-hidden font-sans">
-      {/* Subtle Background Elements to replace the full left panel */}
-      <div className="absolute top-0 right-0 -tr-32 -tr-32 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[100px] pointer-events-none" />
-      <div className="absolute bottom-0 left-0 -bl-32 -bl-32 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[100px] pointer-events-none" />
+    <div className="min-h-screen w-full flex items-center justify-center bg-slate-50 dark:bg-black font-sans selection:bg-indigo-100 overflow-hidden relative">
+      {/* BACKGROUND ELEMENTS - Matching Inner Page style */}
+      <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5 mix-blend-overlay"></div>
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none animate-pulse"></div>
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none animate-pulse" style={{ animationDelay: '1s' }}></div>
 
-      {/* Main Centered Login Container */}
-      <div className="w-full max-w-[440px] relative z-10 px-6">
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="w-full max-w-md p-4 relative z-10"
+      >
+        <div className="bg-white/70 dark:bg-slate-900/70 backdrop-blur-2xl rounded-[2.5rem] shadow-2xl shadow-indigo-500/10 border border-white/40 dark:border-white/5 overflow-hidden ring-1 ring-slate-200/50 dark:ring-white/10">
+          <div className="p-8 sm:p-12 space-y-8">
+            {/* BRAND HEADER */}
+            <motion.div variants={itemVariants} className="flex flex-col items-center text-center space-y-4">
+              <div className="w-16 h-16 bg-indigo-600 rounded-2xl shadow-xl shadow-indigo-200 dark:shadow-none flex items-center justify-center group transition-transform hover:scale-105 duration-300">
+                <FileText className="w-8 h-8 text-white" />
+              </div>
+              <div className="space-y-1">
+                <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+                  Welcome Back
+                </h1>
+                <p className="text-slate-500 dark:text-slate-400 font-medium text-sm">
+                  Access your DocFlow intelligence workspace
+                </p>
+              </div>
+            </motion.div>
 
-        {/* Branding Area */}
-        <div className="flex flex-col items-center justify-center mb-8">
-          <div className="w-16 h-16 rounded-2xl bg-white shadow-sm border border-border/50 flex items-center justify-center mb-4">
-            <FileText className="w-8 h-8 text-primary" />
-          </div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-foreground text-center">DocFlow</h1>
-          <p className="text-sm text-muted-foreground mt-2 text-center uppercase tracking-widest font-semibold">Workspace Authentication</p>
-        </div>
+            {/* LOGIN FORM */}
+            <motion.form variants={itemVariants} onSubmit={handleLogin} className="space-y-6">
+              <AnimatePresence mode="wait">
+                {error && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                    animate={{ opacity: 1, height: "auto", marginTop: 0 }}
+                    exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="p-4 rounded-2xl bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-900/30 flex items-start gap-3 text-red-600 dark:text-red-400 shadow-sm mb-2">
+                       <AlertCircle className="w-5 h-5 shrink-0" />
+                       <p className="text-xs font-semibold leading-relaxed">{error}</p>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
-        <Card className="border-border/40 shadow-xl bg-card/80 backdrop-blur-xl rounded-3xl overflow-hidden">
-          <CardHeader className="space-y-1 pb-6 pt-8 px-8 text-center border-b border-border/10">
-            <CardTitle className="text-xl font-bold font-sans">Sign In</CardTitle>
-            <CardDescription className="text-sm">
-              Access your digital document management system
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="px-8 py-8">
-            <form onSubmit={handleLogin} className="space-y-5">
-              {error && (
-                <div className="flex flex-col gap-1 rounded-xl bg-destructive/5 border border-destructive/20 px-4 py-3 text-sm text-destructive animate-in fade-in slide-in-from-top-2">
-                  <div className="flex items-center gap-2 font-medium">
-                    <AlertCircle className="w-4 h-4 shrink-0" />
-                    Authentication Failed
-                  </div>
-                  <p className="text-xs text-destructive/80 pl-6">{error}</p>
-                </div>
-              )}
-
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-semibold text-foreground/80">Email Address</Label>
-                <div className="relative group">
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 ml-1">Work Email</Label>
                   <Input
-                    id="email"
                     type="email"
-                    placeholder="you@department.gov"
+                    placeholder="name@department.gov"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    disabled={loading}
-                    className="h-12 bg-background/50 border-input/50 focus-visible:ring-primary/40 focus-visible:border-primary transition-all rounded-xl shadow-sm"
+                    className="h-14 bg-white/50 dark:bg-slate-800/50 border-slate-200 dark:border-white/5 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all rounded-2xl text-slate-900 dark:text-white font-medium placeholder:text-slate-400"
                   />
                 </div>
+
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between ml-1">
+                    <Label className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Secure Password</Label>
+                    <button type="button" className="text-[10px] uppercase tracking-widest font-extrabold text-indigo-600 dark:text-indigo-400 hover:underline">Reset?</button>
+                  </div>
+                  <div className="relative group">
+                    <Input
+                      type="password"
+                      placeholder="••••••••"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      className="h-14 bg-white/50 dark:bg-slate-800/50 border-slate-200 dark:border-white/5 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all rounded-2xl text-slate-900 dark:text-white font-medium placeholder:text-slate-400 pl-4 pr-12 shadow-sm"
+                    />
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-500 transition-colors">
+                      <Lock className="w-5 h-5" />
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="password" className="text-sm font-semibold text-foreground/80">Password</Label>
-                  <a href="#" className="text-xs font-medium text-primary hover:text-primary/80 transition-colors">Forgot password?</a>
-                </div>
-                <div className="relative group">
-                  <Input
-                    id="password"
-                    type="password"
-                    placeholder="Enter your password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    disabled={loading}
-                    className="h-12 bg-background/50 border-input/50 focus-visible:ring-primary/40 focus-visible:border-primary transition-all rounded-xl pl-4 pr-10 shadow-sm"
-                  />
-                  <Lock className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground transition-colors group-focus-within:text-primary" />
-                </div>
-              </div>
+              <Button
+                type="submit"
+                disabled={loading}
+                className="w-full h-14 rounded-2xl text-base font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-xl shadow-indigo-500/20 group transition-all"
+              >
+                {loading ? (
+                  <Loader2 className="w-6 h-6 animate-spin" />
+                ) : (
+                  <div className="flex items-center justify-center gap-2">
+                    Sign In
+                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                )}
+              </Button>
+            </motion.form>
 
-              <div className="pt-2">
-                <Button type="submit" className="w-full h-12 text-base font-semibold shadow-md rounded-xl transition-all" disabled={loading}>
-                  {loading ? (
-                    <>
-                      <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                      Signing in...
-                    </>
-                  ) : (
-                    "Secure Sign In"
-                  )}
-                </Button>
+            {/* FOOTER METRICS */}
+            <motion.div variants={itemVariants} className="pt-8 border-t border-slate-100 dark:border-white/5 flex items-center justify-between text-slate-400 dark:text-slate-500">
+              <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest">
+                <Shield className="w-4 h-4 text-emerald-500" />
+                Secure Portal
               </div>
+              <div className="text-[10px] font-bold uppercase tracking-widest">
+                v4.2.0
+              </div>
+            </motion.div>
+          </div>
+        </div>
 
-              <div className="mt-8 text-center border-t border-border/40 pt-6">
-                <div className="inline-flex items-center justify-center gap-2 text-xs text-muted-foreground font-medium bg-muted/50 px-3 py-1.5 rounded-full">
-                  <Shield className="w-3.5 h-3.5" />
-                  Enterprise Grade Security
-                </div>
-                <p className="text-[10px] text-muted-foreground/60 uppercase tracking-widest mt-4">
-                  All access is monitored and logged
-                </p>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
-      </div>
+        {/* EXTERNAL LINKS */}
+        <motion.div variants={itemVariants} className="mt-8 flex justify-center gap-6">
+          {["System Status", "Documentation", "Contact Support"].map((text) => (
+            <button key={text} className="text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-indigo-600 transition-colors">
+              {text}
+            </button>
+          ))}
+        </motion.div>
+      </motion.div>
     </div>
   );
 };
