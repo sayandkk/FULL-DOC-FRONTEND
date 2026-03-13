@@ -113,11 +113,11 @@ const Dashboard = () => {
           </p>
         </div>
         <div className="relative z-10 w-full md:w-96">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-indigo-300" />
+          {/* <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-indigo-300" />
           <Input
             placeholder="Search all files and inwards..."
             className="pl-11 h-12 bg-white/10 dark:bg-black/20 border-white/20 dark:border-white/10 text-white placeholder:text-indigo-300 focus-visible:ring-cyan-500/50 rounded-xl shadow-inner backdrop-blur-md transition-all hover:bg-white/15 focus:bg-white/20"
-          />
+          /> */}
         </div>
       </div>
 
@@ -310,7 +310,7 @@ const Dashboard = () => {
           <CardContent className="flex-1 flex flex-col gap-4">
             {/* Storage Widget Dynamic */}
             <div className="p-4 rounded-xl border border-black/5 dark:border-white/5 bg-slate-50/50 dark:bg-black/20">
-              <div className="flex items-center justify-between mb-2">
+              {/* <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
                   <HardDrive className="w-4 h-4 text-slate-500" />
                   <span className="text-[13px] font-semibold">Storage Usage</span>
@@ -323,7 +323,7 @@ const Dashboard = () => {
                     <span className="text-[11px] font-medium text-muted-foreground" title={`${mb} MB / 5 GB`}>{percent}%</span>
                   );
                 })()}
-              </div>
+              </div> */}
               <div className="w-full h-2 rounded-full bg-slate-200 overflow-hidden">
                 {(() => {
                   const storageGbLimit = 5 * 1024 * 1024 * 1024; // 5 GB

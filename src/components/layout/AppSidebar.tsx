@@ -15,6 +15,7 @@ import {
   Tag,
   GitBranch,
   FileType,
+  Bot
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -31,7 +32,7 @@ const navItems = [
   { label: "File Tracker", icon: GitBranch, path: "/dashboard/workflow" },
   // { label: "Archive", icon: Archive, path: "/dashboard/archive" },
   { label: "Reports", icon: BarChart3, path: "/dashboard/reports" },
-  { label: "Convert", icon: FileType, path: "/dashboard/convert-pdf" },
+  { label: "Document Conversion", icon: FileType, path: "/dashboard/convert-pdf" },
   // { label: "Search", icon: Search, path: "/dashboard/search" },
 ];
 
@@ -80,7 +81,7 @@ const AppSidebar = () => {
       </div>
 
       {/* Search Bar (Mock Cmd+K) */}
-      {!collapsed && (
+      {/* {!collapsed && (
         <div className="px-4 py-3">
           <button className="flex items-center justify-between w-full px-3 py-2 text-sm text-sidebar-foreground/60 bg-black/5 dark:bg-white/5 rounded-md hover:bg-black/10 dark:hover:bg-white/10 transition-colors border border-black/5 dark:border-white/5">
             <div className="flex items-center gap-2">
@@ -92,7 +93,7 @@ const AppSidebar = () => {
             </kbd>
           </button>
         </div>
-      )}
+      )} */}
 
       {/* Navigation */}
       <nav className="flex-1 py-2 px-3 space-y-6 overflow-y-auto">
