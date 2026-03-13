@@ -18,6 +18,7 @@ import ProfileSettings from "./pages/ProfileSettings";
 import ClassificationManagement from "./pages/ClassificationManagement";
 import RequestManagement from "./pages/RequestManagement";
 import PdfConverter from "./pages/PdfConverter";
+import ESignature from "./pages/ESignature";
 import DashboardLayout from "./components/layout/DashboardLayout";
 import NotFound from "./pages/NotFound";
 
@@ -63,6 +64,7 @@ const App = () => (
               <Route path="profile" element={<ProfileSettings />} />
               <Route path="classifications" element={<ClassificationManagement />} />
               <Route path="convert-pdf" element={<PdfConverter />} />
+              <Route path="e-signature" element={<ESignature />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>

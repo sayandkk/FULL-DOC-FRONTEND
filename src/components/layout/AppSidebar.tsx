@@ -15,7 +15,8 @@ import {
   Tag,
   GitBranch,
   FileType,
-  Bot
+  Bot,
+  PenTool
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -33,6 +34,7 @@ const navItems = [
   // { label: "Archive", icon: Archive, path: "/dashboard/archive" },
   { label: "Reports", icon: BarChart3, path: "/dashboard/reports" },
   { label: "Document Conversion", icon: FileType, path: "/dashboard/convert-pdf" },
+  { label: "E-Signature", icon: PenTool, path: "/dashboard/e-signature" },
   // { label: "Search", icon: Search, path: "/dashboard/search" },
 ];
 
@@ -140,7 +142,7 @@ const AppSidebar = () => {
         {/* Action Center Group */}
         <div className="space-y-1">
           {!collapsed && <p className="px-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-2">Action Center</p>}
-          {[navItems[4], navItems[5]].map((item) => {
+          {[navItems[4], navItems[5], navItems[7]].map((item) => {
             const isActive = location.pathname === item.path;
             return (
               <Link
